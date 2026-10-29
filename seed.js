@@ -1,0 +1,2 @@
+import './server/seed.js';
+

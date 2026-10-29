@@ -1,0 +1,3490 @@
+[
+  {
+    "title": "Java Collections: HashMap Internal Hashing",
+    "slug": "java-hashmap-internal-hashing",
+    "track": "Java",
+    "topic": "Java Collections",
+    "difficulty": "hard",
+    "description": "What is the default initial capacity and load factor of `HashMap` in Java, and what happens when the load factor threshold is breached?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Capacity 16, load factor 0.75; the map doubles its capacity and rehashes all entries.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Capacity 10, load factor 0.5; the map grows by 50% and rehashes.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Capacity 16, load factor 1.0; the map doubles only when fully full.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Capacity 32, load factor 0.75; the map grows by 25%.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nHashMap defaults: initial capacity = 16 buckets, load factor = 0.75.\n\nWhen (size > capacity × loadFactor) = (12 entries in a 16-bucket map), a resize is triggered:\n1. A new backing array of capacity × 2 (= 32) is allocated.\n2. All existing entries are rehashed into the new array using the updated capacity mask.\n\nIn Java 8+, buckets with ≥8 entries are converted from a linked list to a red-black tree (treeification) to cap worst-case lookup at O(log n) instead of O(n).",
+    "category": "language"
+  },
+  {
+    "title": "Java Collections: ArrayList vs LinkedList Time Complexity",
+    "slug": "java-arraylist-vs-linkedlist",
+    "track": "Java",
+    "topic": "Java Collections",
+    "difficulty": "medium",
+    "description": "Which operation has different time complexity between `ArrayList` and `LinkedList`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "get(index) — O(1) for ArrayList, O(n) for LinkedList.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "size() — O(1) for ArrayList, O(n) for LinkedList.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "contains(obj) — O(1) for ArrayList, O(n) for LinkedList.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "add(obj) at end — O(n) for ArrayList, O(1) for LinkedList.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nArrayList stores elements in a contiguous array → random access by index is O(1).\nLinkedList is a doubly-linked list → reaching index i requires traversal from head (or tail) → O(n).\n\nsize() is O(1) for both (cached field). contains() is O(n) for both (linear scan). Amortized add() at the end is O(1) for ArrayList (occasional resize) and O(1) for LinkedList (tail pointer maintained).\n\nRule: Prefer ArrayList for read-heavy workloads; LinkedList for frequent insertions/deletions at known positions.",
+    "category": "language"
+  },
+  {
+    "title": "Java Collections: TreeMap Ordering Guarantee",
+    "slug": "java-treemap-ordering",
+    "track": "Java",
+    "topic": "Java Collections",
+    "difficulty": "easy",
+    "description": "What ordering guarantee does `TreeMap` provide, and what data structure backs it?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Insertion order; backed by a doubly-linked hash table.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Natural (or Comparator-defined) sorted order of keys; backed by a Red-Black tree.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Access order; backed by a min-heap.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Hash order (non-deterministic); backed by an array of buckets.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nTreeMap implements NavigableMap and maintains keys in sorted order (natural ordering via Comparable, or a custom Comparator). It is backed by a self-balancing Red-Black tree.\n\nAll basic operations (get, put, remove, containsKey) run in O(log n).\n\nUseful NavigableMap operations unique to TreeMap:\n- firstKey() / lastKey()\n- headMap(toKey) / tailMap(fromKey)\n- floorKey(key) / ceilingKey(key)",
+    "category": "language"
+  },
+  {
+    "title": "Java Multithreading: synchronized vs ReentrantLock",
+    "slug": "java-synchronized-vs-reentrantlock",
+    "track": "Java",
+    "topic": "Multithreading",
+    "difficulty": "hard",
+    "description": "Which feature does `ReentrantLock` provide that the `synchronized` keyword does NOT?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mutual exclusion across threads.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Ability to try acquiring the lock without blocking (tryLock()), and interruptible lock acquisition.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Automatic release of the lock when the block exits.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Prevention of data races between threads.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nBoth synchronized and ReentrantLock provide mutual exclusion and re-entrancy (the same thread can acquire the lock multiple times).\n\nReentrantLock extras:\n- tryLock() — attempt lock non-blocking; returns false immediately if unavailable.\n- tryLock(timeout, unit) — timed wait.\n- lockInterruptibly() — the waiting thread can be interrupted.\n- Multiple Condition objects (newCondition()) for finer-grained wait/notify.\n- Fairness policy (new ReentrantLock(true)) — longest-waiting thread gets lock first.\n\nDrawback: must always unlock() in a finally block; synchronized releases automatically.",
+    "category": "language"
+  },
+  {
+    "title": "Java Multithreading: volatile Keyword",
+    "slug": "java-volatile-keyword",
+    "track": "Java",
+    "topic": "Multithreading",
+    "difficulty": "medium",
+    "description": "What does the `volatile` keyword guarantee in Java?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Atomicity of compound operations like increment (i++).",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Visibility: writes to a volatile variable are immediately visible to all threads; no CPU-cache stale reads.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "That the variable is immutable after initialization.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Mutual exclusion — only one thread can read the variable at a time.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nvolatile guarantees the happens-before relationship for visibility: any write to a volatile field happens-before any subsequent read of that same field by any thread. This prevents CPU caches from serving stale values.\n\nWhat volatile does NOT guarantee:\n- Atomicity: i++ is read-modify-write — still a race without synchronization.\n- Mutual exclusion: multiple threads can read/write simultaneously.\n\nUse volatile for flags (boolean stop = false;) or single-writer scenarios. Use AtomicInteger / synchronized for compound operations.",
+    "category": "language"
+  },
+  {
+    "title": "Java JVM: Stack vs Heap Memory",
+    "slug": "java-jvm-stack-vs-heap",
+    "track": "Java",
+    "topic": "JVM Memory",
+    "difficulty": "easy",
+    "description": "Which statement about JVM Stack and Heap memory is correct?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Local variables and method call frames live on the Heap; objects live on the Stack.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Each thread has its own Stack (holding frames and local primitives); all objects live on the shared Heap.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Both Stack and Heap are shared across all threads.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Static variables live on the Stack and are garbage collected with each method call.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nJVM Memory layout:\n- Stack: per-thread; stores method call frames, local primitive variables, and object references (not the objects themselves). Automatically freed when a method returns. StackOverflowError if exhausted.\n- Heap: shared across all threads; stores all object instances and arrays. Managed by the garbage collector.\n- Metaspace (Java 8+): stores class metadata, static variables, and interned strings. Replaced PermGen.\n\nObject references are on the Stack; the actual object data is on the Heap.",
+    "category": "language"
+  },
+  {
+    "title": "Java JVM: Garbage Collection – G1GC",
+    "slug": "java-jvm-g1gc",
+    "track": "Java",
+    "topic": "JVM Memory",
+    "difficulty": "hard",
+    "description": "What is the primary design goal of the G1 (Garbage First) garbage collector?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Maximize throughput with no pause-time target.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Predictable, bounded GC pause times by dividing the heap into equal-sized regions and prioritizing collection of regions with the most garbage.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Minimize memory footprint by compacting the heap after every minor GC.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Use a single-threaded stop-the-world collector for simplicity.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nG1GC (default since Java 9) divides the heap into equal-sized regions (~1–32 MB each). Each region is dynamically designated as Eden, Survivor, or Old.\n\nKey design traits:\n- Concurrent marking runs alongside the application to identify live objects.\n- Mixed collections collect the regions with the highest garbage ratio first (\"Garbage First\").\n- Users set a soft pause-time target (-XX:MaxGCPauseMillis=200); G1 adjusts region count collected per cycle to meet it.\n\nContrast: Parallel GC maximizes throughput but has unpredictable pauses; ZGC/Shenandoah target sub-millisecond pauses.",
+    "category": "language"
+  },
+  {
+    "title": "Java OOPs: Abstract Class vs Interface (Java 8+)",
+    "slug": "java-abstract-class-vs-interface",
+    "track": "Java",
+    "topic": "OOPs",
+    "difficulty": "medium",
+    "description": "In Java 8+, what is a key difference between an `abstract class` and an `interface`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Interfaces cannot have any method bodies; abstract classes can.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A class can extend only one abstract class but implement multiple interfaces.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Abstract classes support default methods; interfaces do not.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Interfaces can have instance fields; abstract classes cannot.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nThe single most important distinction remains: Java supports single class inheritance but multiple interface implementation.\n\nSince Java 8, interfaces CAN have:\n- default methods (with body) — for backward-compatible API evolution.\n- static methods.\n- private methods (Java 9+).\n\nAbstract classes CAN have:\n- Instance fields (state).\n- Constructors.\n- Any access modifier on methods.\n\nChoose abstract class when you need shared state or constructor logic; choose interface for pure capability contracts that multiple unrelated classes can implement.",
+    "category": "language"
+  },
+  {
+    "title": "Java OOPs: Method Overriding Rules",
+    "slug": "java-method-overriding-rules",
+    "track": "Java",
+    "topic": "OOPs",
+    "difficulty": "medium",
+    "description": "Which rule MUST be followed when overriding a method in Java?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The overriding method must throw the same checked exceptions as the parent.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The overriding method must have the same name, parameter list, and a return type that is the same or a covariant subtype.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "The overriding method must have the same access modifier as the parent.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The overriding method must be marked with @Override annotation.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nOverride rules:\n✅ Same method name.\n✅ Same parameter list (signature).\n✅ Return type: same or covariant (a subtype of the parent's return type) — e.g., parent returns Animal, child can return Dog.\n✅ Access: must be same or more permissive (can widen from protected to public, not narrow).\n✅ Checked exceptions: can throw fewer/narrower checked exceptions, not new or broader ones.\n\n@Override is highly recommended (it makes the compiler catch mistakes) but is NOT mandatory.\n\nstatic and private methods cannot be overridden — they are hidden or bound at compile time.",
+    "category": "language"
+  },
+  {
+    "title": "Java DSA: Binary Search Condition",
+    "slug": "java-dsa-binary-search",
+    "track": "Java",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "What is the correct loop condition for iterative binary search to avoid infinite loops and off-by-one errors?",
+    "options": [
+      {
+        "key": "A",
+        "text": "while (low < high)",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "while (low <= high)",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "while (low != high)",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "while (low < high - 1)",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — while (low <= high)\n\nUsing low <= high means the search space includes a single-element subarray (low == high), which is the terminating base case where that element must be checked.\n\nUsing low < high stops one element early — you miss the case where the target is that last element.\n\nSafe midpoint calculation to prevent integer overflow:\n  int mid = low + (high - low) / 2;\n  // NOT: (low + high) / 2 — can overflow for large int values\n\nTime complexity: O(log n). Space: O(1) iterative, O(log n) recursive (call stack).",
+    "category": "dsa"
+  },
+  {
+    "title": "Java DSA: Quick Sort Worst Case",
+    "slug": "java-dsa-quicksort-worst-case",
+    "track": "Java",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "When does QuickSort degrade to O(n²) time complexity?",
+    "options": [
+      {
+        "key": "A",
+        "text": "When the array is randomly shuffled.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "When the pivot consistently chosen is the largest or smallest element (e.g., sorted or reverse-sorted arrays with first/last element pivot).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "When all elements are equal.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "When the array size exceeds 1 million elements.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nQuickSort's worst case is O(n²) when the pivot creates maximally unbalanced partitions — one side has 0 elements, the other has n-1. This happens when sorting an already-sorted (or reverse-sorted) array with a naive first/last element pivot.\n\nMitigation strategies:\n- Median-of-three pivot (choose median of first, middle, last elements).\n- Random pivot selection.\n- Three-way partitioning (Dutch National Flag) for arrays with many duplicates.\n\nJava's Arrays.sort() uses Dual-Pivot Quicksort for primitives (O(n log n) in practice) and TimSort (merge sort hybrid) for objects.",
+    "category": "dsa"
+  },
+  {
+    "title": "Java DSA: HashMap vs HashSet",
+    "slug": "java-dsa-hashmap-vs-hashset",
+    "track": "Java",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "How is `HashSet` internally implemented in Java?",
+    "options": [
+      {
+        "key": "A",
+        "text": "As a LinkedList of unique elements.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "As a HashMap where each element is stored as a key and a dummy constant object (PRESENT) is the value.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "As a sorted TreeMap for O(log n) lookups.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "As a BitSet for compact memory storage.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nHashSet<E> is backed by a HashMap<E, Object> where the value is always a static dummy object:\n  private static final Object PRESENT = new Object();\n\nWhen you call set.add(x), it calls map.put(x, PRESENT). contains(x) calls map.containsKey(x).\n\nThis means HashSet inherits all HashMap properties:\n- O(1) average add/remove/contains.\n- No guaranteed iteration order.\n- Allows null (one null element).\n- Not thread-safe (use Collections.synchronizedSet or CopyOnWriteArraySet for concurrency).",
+    "category": "dsa"
+  },
+  {
+    "title": "Java Multithreading: Deadlock Conditions",
+    "slug": "java-deadlock-conditions",
+    "track": "Java",
+    "topic": "Multithreading",
+    "difficulty": "hard",
+    "description": "Which set of conditions must ALL be simultaneously true for a deadlock to occur?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Mutual exclusion, Hold and wait, No preemption, Circular wait.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Race condition, Starvation, Priority inversion.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Shared memory, Multiple threads, Synchronized methods.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Lock ordering, Busy waiting, Thread priority.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A — Coffman Conditions (1971)\n\nAll four must hold simultaneously for deadlock:\n1. Mutual exclusion: resources cannot be shared simultaneously.\n2. Hold and wait: a thread holds at least one resource while waiting for more.\n3. No preemption: resources cannot be forcibly taken from a thread.\n4. Circular wait: a cycle exists in the resource-allocation graph (T1 waits for T2's resource, T2 waits for T1's resource).\n\nPrevention: break any ONE condition.\n- Acquire locks in a consistent global order (breaks circular wait).\n- Use tryLock() with timeout (breaks hold-and-wait or no-preemption).",
+    "category": "language"
+  },
+  {
+    "title": "Java JVM: String Pool Interning",
+    "slug": "java-string-pool-interning",
+    "track": "Java",
+    "topic": "JVM Memory",
+    "difficulty": "medium",
+    "description": "What does the following code print?\n\n```java\nString a = \"hello\";\nString b = \"hello\";\nString c = new String(\"hello\");\nSystem.out.println(a == b);\nSystem.out.println(a == c);\nSystem.out.println(a == c.intern());\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "true, true, true",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "true, false, true",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "false, false, false",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "true, false, false",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — true, false, true\n\nString literals are interned automatically in the String Pool (Metaspace in Java 8+):\n- a and b both point to the same pooled \"hello\" object → a == b is true.\n- new String(\"hello\") always creates a new Heap object outside the pool → a == c is false.\n- c.intern() returns the pooled reference → a == c.intern() is true.\n\nAlways compare String content with .equals(), not ==.\n== checks reference identity; .equals() checks character-by-character value equality.",
+    "category": "language"
+  },
+  {
+    "title": "Java OOPs: Polymorphism — Dynamic Dispatch",
+    "slug": "java-polymorphism-dynamic-dispatch",
+    "track": "Java",
+    "topic": "OOPs",
+    "difficulty": "medium",
+    "description": "What is printed?\n\n```java\nclass Animal { String sound() { return \"...\"; } }\nclass Dog extends Animal { String sound() { return \"Woof\"; } }\n\nAnimal a = new Dog();\nSystem.out.println(a.sound());\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "...",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Woof",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Compilation error",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Runtime error",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — \"Woof\"\n\nThis is runtime polymorphism (dynamic method dispatch). Java resolves virtual method calls based on the actual runtime type of the object, not the declared reference type.\n\na is declared as Animal but actually holds a Dog instance. When a.sound() is called, the JVM uses the vtable to dispatch to Dog.sound() at runtime.\n\nContrast with field access — fields are bound at compile time based on the reference type:\n  class A { int x = 1; }\n  class B extends A { int x = 2; }\n  A obj = new B();\n  System.out.println(obj.x); // prints 1 (compile-time binding)",
+    "category": "language"
+  },
+  {
+    "title": "Java DSA: Stack using Two Queues",
+    "slug": "java-dsa-stack-two-queues",
+    "track": "Java",
+    "topic": "DSA",
+    "difficulty": "hard",
+    "description": "When implementing a Stack using two Queues with O(1) push and O(n) pop, what is the strategy for the pop operation?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Dequeue all elements from Q1 into Q2 except the last one, return the last one, then swap Q1 and Q2.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Enqueue all elements of Q2 into Q1, then dequeue the front of Q1.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Use a recursive call to remove the tail of Q1 directly.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Use Java's PriorityQueue with timestamps as priority to simulate LIFO order.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nStrategy for O(1) push / O(n) pop:\n- push(x): simply enqueue x to Q1. O(1).\n- pop(): move all but the last element from Q1 to Q2, record the last element as the result, then swap Q1 and Q2 references. O(n).\n\nAlternatively: O(n) push / O(1) pop — on push, enqueue to Q2, then transfer all of Q1 into Q2, then swap. This makes pop just a dequeue of Q1's front.\n\nThe tradeoff is which operation you want to be cheap. Interview tip: state the tradeoff explicitly.",
+    "category": "dsa"
+  },
+  {
+    "title": "Java Collections: ConcurrentHashMap vs Hashtable",
+    "slug": "java-concurrenthashmap-vs-hashtable",
+    "track": "Java",
+    "topic": "Java Collections",
+    "difficulty": "hard",
+    "description": "How does `ConcurrentHashMap` improve concurrency compared to `Hashtable`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "ConcurrentHashMap has no synchronization and relies on the caller to synchronize.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "ConcurrentHashMap uses segment-level (Java 7) or node-level CAS + bin locking (Java 8+) locking, allowing concurrent reads and partial writes without locking the entire map.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "ConcurrentHashMap locks the entire map on every read and write, same as Hashtable but with better default capacity.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "ConcurrentHashMap stores entries in a sorted order to reduce contention.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nHashtable: synchronizes every method on the entire object — only one thread can operate at a time. Severe bottleneck.\n\nConcurrentHashMap (Java 8+): uses a combination of:\n- volatile reads for get() — no locking at all for reads.\n- CAS (Compare-And-Swap) for inserts into empty bins.\n- synchronized on individual bin head nodes only for structural changes.\n\nThis allows full concurrent reads and highly concurrent writes (only threads writing to the same bin contend). Default concurrency level is effectively the number of CPUs.\n\nNever use Hashtable in new code — use ConcurrentHashMap or Collections.synchronizedMap().",
+    "category": "language"
+  },
+  {
+    "title": "Java DSA: Graph BFS vs DFS Use Cases",
+    "slug": "java-dsa-bfs-vs-dfs",
+    "track": "Java",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "Which algorithm is best suited for finding the shortest path in an unweighted graph?",
+    "options": [
+      {
+        "key": "A",
+        "text": "DFS — it explores deep paths first and backtracks.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "BFS — it explores all neighbors at distance d before moving to d+1, guaranteeing the shortest path.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Dijkstra's — it is required even for unweighted graphs.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Bellman-Ford — it handles negative weights and is used for shortest paths.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nBFS (Breadth-First Search) uses a queue and explores all nodes at the current depth before going deeper. In an unweighted graph where each edge has equal cost, the first time BFS reaches a node is guaranteed to be via the shortest path (fewest edges).\n\nDFS may find a path to the target, but it is not guaranteed to be the shortest.\n\nFor weighted graphs:\n- All positive weights → Dijkstra's (O((V+E) log V) with a min-heap).\n- Negative weights (no negative cycles) → Bellman-Ford O(VE).\n- All-pairs shortest paths → Floyd-Warshall O(V³).",
+    "category": "dsa"
+  },
+  {
+    "title": "Java OOPs: Composition vs Inheritance",
+    "slug": "java-composition-vs-inheritance",
+    "track": "Java",
+    "topic": "OOPs",
+    "difficulty": "medium",
+    "description": "Why is \"Favor Composition over Inheritance\" a widely recommended design principle?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Composition is faster at runtime because method calls are inlined by the JIT.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Composition achieves code reuse without tight coupling; changing a composed class does not break the outer class, and behavior can be changed at runtime.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Inheritance supports multiple parents in Java, making it more flexible than composition.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Composition eliminates the need for interfaces.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nInheritance creates tight coupling: a subclass depends on parent implementation details. If the parent changes an internal method, it can silently break the subclass (the \"fragile base class\" problem).\n\nComposition (HAS-A): the outer class delegates to a contained object. Benefits:\n- Loose coupling — outer class only depends on the composed class's public API.\n- Runtime flexibility — the composed object can be swapped (e.g., dependency injection).\n- No restriction on final classes — you can compose final classes but not extend them.\n\nExample: Instead of extending ArrayList to make a custom list, compose an ArrayList inside your class and expose only the needed operations.",
+    "category": "language"
+  },
+  {
+    "title": "Java JVM: JIT Compilation",
+    "slug": "java-jvm-jit-compilation",
+    "track": "Java",
+    "topic": "JVM Memory",
+    "difficulty": "medium",
+    "description": "What is the role of the JIT (Just-In-Time) compiler in the JVM?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It compiles Java source (.java) files into bytecode (.class) files ahead of time.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It identifies frequently executed bytecode (\"hot spots\") at runtime and compiles them to native machine code, significantly improving performance.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It interprets bytecode line-by-line without producing native code.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It manages garbage collection and heap compaction.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nJVM execution pipeline:\n1. javac compiles source → bytecode (.class).\n2. JVM initially interprets bytecode (slow but quick to start).\n3. The JIT compiler (C1 + C2 in HotSpot) profiles execution and identifies \"hot\" methods called frequently.\n4. Hot methods are compiled to optimized native machine code (stored in the Code Cache).\n5. Future calls execute native code directly → orders-of-magnitude faster.\n\nJIT optimizations include inlining, loop unrolling, escape analysis, dead-code elimination.\nGraalVM's AOT (native-image) compiles everything ahead of time for instant startup but sacrifices some peak throughput optimizations.",
+    "category": "language"
+  },
+  {
+    "title": "JS Event Loop: Task Queue Priority",
+    "slug": "js-web-task-queue-priority",
+    "track": "JavaScript",
+    "topic": "Event Loop",
+    "difficulty": "hard",
+    "description": "In what order are these callbacks executed?\n\n```js\nsetTimeout(() => console.log('T'), 0);\nrequestAnimationFrame(() => console.log('R'));\nPromise.resolve().then(() => console.log('P'));\nqueueMicrotask(() => console.log('M'));\nconsole.log('S');\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "S, P, M, T, R",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "S, P, M, R, T (RAF before setTimeout in most browsers)",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "S, T, R, P, M",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "S, M, P, T, R",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — S, P, M, R, T\n\nPriority order in browsers:\n1. Synchronous code → S.\n2. Microtask queue (drained completely): Promise.then → P, then queueMicrotask → M.\n3. Rendering callbacks (requestAnimationFrame) → R (browser-specific, before next paint).\n4. Macrotask queue (setTimeout) → T.\n\nNote: RAF fires before the browser paints and is generally scheduled before the setTimeout macrotask in most browser implementations, though this is not strictly spec-mandated. In Node.js, RAF does not exist.",
+    "category": "language"
+  },
+  {
+    "title": "JS Closures: Stale Closure in React",
+    "slug": "js-web-stale-closure-react",
+    "track": "JavaScript",
+    "topic": "Closures",
+    "difficulty": "hard",
+    "description": "In React, why does the following interval always print 0?\n\n```js\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  useEffect(() => {\n    const id = setInterval(() => console.log(count), 1000);\n    return () => clearInterval(id);\n  }, []); // empty deps\n  return <button onClick={() => setCount(c => c + 1)}>+</button>;\n}\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "setInterval is broken in React.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The closure captures count = 0 at mount time. Because the deps array is empty, the effect never re-runs, so count is always the stale initial value.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "useState resets count to 0 on every render.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "console.log inside setInterval always receives undefined.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — Stale closure\n\nThe effect runs once (empty [] deps). The setInterval callback closes over count = 0 from that first render. Even as state updates cause re-renders, the interval callback never gets a new closure — it always reads the captured 0.\n\nFix: use a ref to hold the latest value:\n  const countRef = useRef(count);\n  useEffect(() => { countRef.current = count; });\n  useEffect(() => {\n    const id = setInterval(() => console.log(countRef.current), 1000);\n    return () => clearInterval(id);\n  }, []);",
+    "category": "language"
+  },
+  {
+    "title": "JS DOM: Event Delegation",
+    "slug": "js-web-event-delegation",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "medium",
+    "description": "What is the advantage of event delegation over attaching listeners to individual elements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It prevents event propagation entirely.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A single listener on a parent element handles events from all current and future child elements, reducing memory usage and setup time.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It makes events fire in capture phase instead of bubble phase.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It allows multiple handlers on the same element without conflicts.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nEvent delegation exploits event bubbling: events fired on a child bubble up through ancestors. By placing one listener on a parent (e.g., a <ul>), you handle clicks on all current and future <li> children.\n\nBenefits:\n1. Memory: one listener vs N listeners.\n2. Dynamic elements: new children added later are automatically covered.\n3. Simpler setup/teardown.\n\nPattern:\n  ul.addEventListener('click', (e) => {\n    if (e.target.tagName === 'LI') { /* handle */ }\n  });\n\nUse e.target to identify the actual element clicked, and e.currentTarget for the delegating parent.",
+    "category": "language"
+  },
+  {
+    "title": "JS Async: Async Iterator Pattern",
+    "slug": "js-web-async-iterator",
+    "track": "JavaScript",
+    "topic": "Async patterns",
+    "difficulty": "hard",
+    "description": "What does `for await...of` iterate over?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Any object with a [Symbol.iterator] method.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Any object with a [Symbol.asyncIterator] method that returns an async iterator yielding Promises.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Arrays of Promises passed to Promise.all.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Only Node.js readable streams.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nfor await...of works with async iterables — objects that implement [Symbol.asyncIterator]. Each iteration awaits the Promise returned by iterator.next().\n\nExample with an async generator:\n  async function* paginate(url) {\n    let page = 1;\n    while (true) {\n      const data = await fetch(url + '?page=' + page++).then(r => r.json());\n      if (!data.length) return;\n      yield data;\n    }\n  }\n\n  for await (const batch of paginate('/api/items')) {\n    console.log(batch);\n  }\n\nNode.js readable streams implement asyncIterator, so you can: for await (const chunk of stream) {}.",
+    "category": "language"
+  },
+  {
+    "title": "JS Prototype: __proto__ vs prototype",
+    "slug": "js-web-proto-vs-prototype",
+    "track": "JavaScript",
+    "topic": "Prototype",
+    "difficulty": "medium",
+    "description": "What is the difference between `__proto__` and `prototype`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "They are interchangeable synonyms.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "__proto__ is the internal [[Prototype]] link on every object instance; prototype is a property of constructor functions used to set up the [[Prototype]] of instances created with new.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "prototype is used on all objects; __proto__ only exists on functions.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "__proto__ is deprecated and replaced by prototype in ES6.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nEvery object has an internal [[Prototype]] slot (accessible via __proto__ or Object.getPrototypeOf()). This forms the lookup chain for property access.\n\nConstructor functions have a .prototype property (an object). When you do new Fn(), the newly created object's [[Prototype]] is set to Fn.prototype.\n\n  function Dog() {}\n  const d = new Dog();\n  d.__proto__ === Dog.prototype        // true\n  Object.getPrototypeOf(d) === Dog.prototype // true (preferred)\n\n__proto__ is standardized in ES2015 Annex B but using Object.getPrototypeOf/setPrototypeOf is recommended over __proto__.",
+    "category": "language"
+  },
+  {
+    "title": "JS Web APIs: localStorage vs sessionStorage vs Cookie",
+    "slug": "js-web-storage-types",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "easy",
+    "description": "Which Web storage mechanism persists data across browser restarts AND is sent to the server with every HTTP request?",
+    "options": [
+      {
+        "key": "A",
+        "text": "localStorage",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "sessionStorage",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Cookie",
+        "correct": true
+      },
+      {
+        "key": "D",
+        "text": "IndexedDB",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: C — Cookie\n\nComparison:\n| Feature        | localStorage | sessionStorage | Cookie |\n|----------------|-------------|---------------|--------|\n| Persists       | Until cleared | Tab lifetime | Expiry date |\n| Sent to server | No          | No            | Yes (every request) |\n| Capacity       | ~5 MB       | ~5 MB         | ~4 KB |\n| JS accessible  | Yes         | Yes           | Yes (unless HttpOnly) |\n\nCookies with HttpOnly flag are invisible to JavaScript — only sent via HTTP headers, making them secure for session tokens. Use localStorage for client-only non-sensitive data; use HttpOnly cookies for auth tokens.",
+    "category": "language"
+  },
+  {
+    "title": "JS Closures: Partial Application with bind",
+    "slug": "js-web-partial-application-bind",
+    "track": "JavaScript",
+    "topic": "Closures",
+    "difficulty": "medium",
+    "description": "What does the following output?\n\n```js\nfunction multiply(a, b) { return a * b; }\nconst double = multiply.bind(null, 2);\nconsole.log(double(5));\nconsole.log(double(10));\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "NaN, NaN",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "10, 20",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "7, 12",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "2, 2",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — 10, 20\n\nbind(null, 2) creates a new function with the first argument (a) permanently fixed to 2. Subsequent calls supply the remaining arguments.\n\ndouble(5)  → multiply(2, 5)  = 10\ndouble(10) → multiply(2, 10) = 20\n\nnull is passed as the this context because multiply doesn't use this. This is partial application (pre-filling some arguments). Currying is a related concept where a function is transformed to accept one argument at a time: f(a)(b).",
+    "category": "language"
+  },
+  {
+    "title": "JS Async: Generator as Coroutine",
+    "slug": "js-web-generator-coroutine",
+    "track": "JavaScript",
+    "topic": "Async patterns",
+    "difficulty": "hard",
+    "description": "What is printed by the following code?\n\n```js\nfunction* gen() {\n  const x = yield 1;\n  const y = yield x + 2;\n  return y * 3;\n}\nconst g = gen();\nconsole.log(g.next());\nconsole.log(g.next(10));\nconsole.log(g.next(5));\n```",
+    "options": [
+      {
+        "key": "A",
+        "text": "{value:1,done:false}, {value:12,done:false}, {value:15,done:true}",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "{value:1,done:false}, {value:3,done:false}, {value:15,done:true}",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "{value:1,done:false}, {value:12,done:false}, {value:5,done:true}",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "{value:undefined,done:false} three times",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nGenerator execution:\n1. g.next() → runs until first yield 1; returns {value:1, done:false}.\n2. g.next(10) → resumes; the value 10 is sent IN as the result of yield (x = 10). Runs to yield x+2 = yield 12; returns {value:12, done:false}.\n3. g.next(5) → resumes; y = 5. Executes return 5*3 = 15; returns {value:15, done:true}.\n\nKey: the argument to next() after the first call becomes the VALUE of the yield expression inside the generator. The first next() argument is always ignored.",
+    "category": "language"
+  },
+  {
+    "title": "JS DOM: Virtual DOM Concept",
+    "slug": "js-web-virtual-dom",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "medium",
+    "description": "What problem does the Virtual DOM (used by React) solve?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It prevents all DOM mutations and makes pages static.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It batches and minimizes expensive real DOM mutations by first computing diffs on a lightweight in-memory tree representation.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It replaces the browser DOM entirely with a canvas-based rendering engine.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It pre-renders HTML on the server and sends it to the client.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nDirect DOM manipulation is expensive (causes reflows/repaints). React's Virtual DOM:\n1. Maintains a lightweight JS object tree mirroring the real DOM.\n2. On state change, renders a NEW virtual tree.\n3. Diffs the old and new virtual trees (\"reconciliation\") using a heuristic O(n) algorithm.\n4. Applies ONLY the minimal set of real DOM mutations needed.\n\nReact Fiber (React 16+) makes reconciliation interruptible, enabling concurrent rendering and prioritized updates. Svelte and Solid.js achieve similar performance by compiling away the virtual DOM entirely.",
+    "category": "language"
+  },
+  {
+    "title": "JS Prototype: Mixin Pattern",
+    "slug": "js-web-mixin-pattern",
+    "track": "JavaScript",
+    "topic": "Prototype",
+    "difficulty": "medium",
+    "description": "What is the purpose of the mixin pattern in JavaScript?",
+    "options": [
+      {
+        "key": "A",
+        "text": "To create deep copies of objects for immutability.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "To compose reusable behaviors into a class without using inheritance, working around single-class-extension limits.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "To serialize objects to JSON and back.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "To freeze an object and prevent property additions.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nJavaScript only allows extending one class. Mixins let you compose behaviors from multiple sources:\n\n  const Serializable = (Base) => class extends Base {\n    serialize() { return JSON.stringify(this); }\n  };\n  const Validatable = (Base) => class extends Base {\n    validate() { return !!this.name; }\n  };\n\n  class User extends Serializable(Validatable(EventEmitter)) {\n    constructor(name) { super(); this.name = name; }\n  }\n\nOr simpler object-based mixins via Object.assign(Target.prototype, mixinObj).\n\nMixins are the functional equivalent of multiple inheritance without the diamond problem.",
+    "category": "language"
+  },
+  {
+    "title": "JS Web Performance: Debounce vs Throttle",
+    "slug": "js-web-debounce-vs-throttle",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "medium",
+    "description": "What is the difference between debounce and throttle?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Debounce fires at most once per interval; throttle delays the first call.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Debounce postpones execution until after a quiet period; throttle ensures execution at most once per time interval regardless of call frequency.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "They are identical — both rate-limit function calls.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Throttle is only for network requests; debounce is only for UI events.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nDebounce: \"wait until calls stop.\" Resets a timer on every call; executes only after the calls cease for a defined delay.\n- Use case: search-as-you-type (only fetch after user stops typing for 300ms).\n\nThrottle: \"execute at most once per interval.\" First call fires immediately; subsequent calls within the window are ignored.\n- Use case: scroll event handlers, resize listeners (process at most once per 100ms).\n\nQuick memory aid:\n- Debounce → trailing edge (after silence).\n- Throttle → leading edge (first call, then cooldown).",
+    "category": "language"
+  },
+  {
+    "title": "JS Async: AbortController for Fetch Cancellation",
+    "slug": "js-web-abort-controller",
+    "track": "JavaScript",
+    "topic": "Async patterns",
+    "difficulty": "medium",
+    "description": "How do you cancel an in-flight `fetch()` request in modern JavaScript?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Call fetch.cancel() on the returned Promise.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Use AbortController: pass its signal to fetch; call controller.abort() to cancel.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Set a timeout with setTimeout and ignore the response.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Reject the fetch Promise manually with Promise.reject().",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  const controller = new AbortController();\n  const { signal } = controller;\n\n  fetch('/api/data', { signal })\n    .then(res => res.json())\n    .catch(err => {\n      if (err.name === 'AbortError') console.log('Fetch cancelled');\n    });\n\n  // Cancel after 5 seconds\n  setTimeout(() => controller.abort(), 5000);\n\nAbortController works with fetch, EventListener (addEventListener(type, fn, { signal })), and any API that accepts AbortSignal. AbortSignal.timeout(ms) (Node 17.3+, modern browsers) creates a signal that auto-aborts after a delay.",
+    "category": "language"
+  },
+  {
+    "title": "JS Event Loop: Microtask Starvation",
+    "slug": "js-web-microtask-starvation",
+    "track": "JavaScript",
+    "topic": "Event Loop",
+    "difficulty": "hard",
+    "description": "What happens if microtasks schedule new microtasks indefinitely?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The browser automatically interleaves macrotasks to prevent freezing.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The microtask queue is drained completely before the next macrotask, causing the page to freeze (microtask starvation of the event loop).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "After 1000 microtasks, the engine automatically yields to the event loop.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "New microtasks are queued after the next macrotask.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nThe event loop guarantees to drain the entire microtask queue before processing the next macrotask. If each microtask queues another microtask, the queue never empties → the render step and macrotasks are starved → the UI freezes.\n\n  function flood() {\n    Promise.resolve().then(flood); // infinite microtask chain\n  }\n  flood(); // page becomes unresponsive\n\nThis is similar to an infinite synchronous loop but using the microtask queue. Use setTimeout for breaking long work into chunks — it yields to the event loop between chunks (e.g., scheduler.postTask or requestIdleCallback for low-priority work).",
+    "category": "language"
+  },
+  {
+    "title": "JS DOM: Shadow DOM and Web Components",
+    "slug": "js-web-shadow-dom",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "hard",
+    "description": "What is the primary benefit of Shadow DOM in Web Components?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It makes elements invisible to screen readers, improving accessibility.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It provides style and DOM encapsulation — CSS inside the shadow root does not leak out, and external CSS does not bleed in.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It renders components server-side automatically.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It enables faster rendering by bypassing the layout engine.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nShadow DOM creates a separate, encapsulated DOM subtree (shadow root) attached to a host element:\n  const shadow = element.attachShadow({ mode: 'open' });\n  shadow.innerHTML = '<style>p { color: red; }</style><p>Hello</p>';\n\nEncapsulation:\n- Styles defined inside the shadow root apply only within it.\n- Global CSS (body, .btn) does not affect shadow DOM elements.\n- Shadow DOM elements are not accessible via document.querySelector — use element.shadowRoot.querySelector.\n\nThis solves CSS global namespace collisions in large apps. Frameworks like React and Vue achieve similar isolation via CSS modules or scoped styles, without native Shadow DOM.",
+    "category": "language"
+  },
+  {
+    "title": "JS Closures: Module Pattern for Encapsulation",
+    "slug": "js-web-module-pattern",
+    "track": "JavaScript",
+    "topic": "Closures",
+    "difficulty": "medium",
+    "description": "In ES Modules, what is the difference between a named export and a default export?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Named exports can only export functions; default exports can export anything.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A module can have multiple named exports but only one default export; named exports must be imported with the exact exported name (or aliased with \"as\").",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Default exports are tree-shakeable; named exports are not.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Named exports are deprecated in favor of default exports in ES2022.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nNamed exports:\n  export const PI = 3.14;\n  export function add(a, b) { return a + b; }\n  // import: import { PI, add } from './math.js';\n  // alias:  import { add as sum } from './math.js';\n\nDefault export (one per module):\n  export default class Calculator { ... }\n  // import: import Calculator from './Calculator.js'; (any name)\n\nTree shaking (dead code elimination by bundlers like Webpack/Rollup) works with BOTH named and default exports, as long as the module is side-effect-free. Named exports are generally preferred for libraries because they give bundlers more information for tree shaking.",
+    "category": "language"
+  },
+  {
+    "title": "JS Prototype: Symbol.iterator and Custom Iterables",
+    "slug": "js-web-symbol-iterator",
+    "track": "JavaScript",
+    "topic": "Prototype",
+    "difficulty": "hard",
+    "description": "How do you make a custom object work with `for...of` loops?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Extend the Array class.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Implement the [Symbol.iterator]() method that returns an object with a next() method returning {value, done}.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Add a forEach() method to the object.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Use Object.defineProperty to make properties enumerable.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nAny object with [Symbol.iterator]() is iterable and works with for...of, spread (...), destructuring, and Array.from().\n\n  const range = {\n    from: 1, to: 5,\n    [Symbol.iterator]() {\n      let current = this.from;\n      const last = this.to;\n      return {\n        next() {\n          return current <= last\n            ? { value: current++, done: false }\n            : { value: undefined, done: true };\n        }\n      };\n    }\n  };\n  for (const n of range) console.log(n); // 1 2 3 4 5\n\nBuilt-in iterables: Array, String, Map, Set, NodeList, arguments, TypedArrays.",
+    "category": "language"
+  },
+  {
+    "title": "JS Async: Promise.race for Timeouts",
+    "slug": "js-web-promise-race-timeout",
+    "track": "JavaScript",
+    "topic": "Async patterns",
+    "difficulty": "medium",
+    "description": "How do you implement a fetch with a timeout using `Promise.race`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Pass a timeout option directly to fetch().",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Race the fetch Promise against a rejection Promise that rejects after the timeout duration.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Wrap the fetch in a try/catch and set a time limit with Date.now().",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Use XMLHttpRequest which has a built-in timeout property.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  function fetchWithTimeout(url, ms) {\n    const timeout = new Promise((_, reject) =>\n      setTimeout(() => reject(new Error('Request timed out')), ms)\n    );\n    return Promise.race([fetch(url), timeout]);\n  }\n\n  fetchWithTimeout('/api/data', 3000)\n    .then(res => res.json())\n    .catch(err => console.error(err.message));\n\nPromise.race returns the first settled promise (fulfilled or rejected). If the timeout rejects first, the overall promise rejects. Note: the fetch still runs in the background — use AbortController to actually cancel the network request for resource cleanup.",
+    "category": "language"
+  },
+  {
+    "title": "JS Event Loop: process.nextTick vs Promise in Node.js",
+    "slug": "js-web-nexttick-vs-promise-node",
+    "track": "JavaScript",
+    "topic": "Event Loop",
+    "difficulty": "hard",
+    "description": "In Node.js, which runs first: `process.nextTick(cb)` or `Promise.resolve().then(cb)`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "They run in the same queue and order is non-deterministic.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "process.nextTick runs first — it has its own queue that is drained before the Promise microtask queue.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Promise microtask runs first — nextTick is a macrotask.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "process.nextTick is a macrotask like setTimeout.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nNode.js has TWO microtask-priority queues (processed before I/O macrotasks):\n1. nextTick queue — drained completely first.\n2. Promise microtask queue — drained next.\n\n  Promise.resolve().then(() => console.log('Promise'));\n  process.nextTick(() => console.log('nextTick'));\n  // Output: nextTick, Promise\n\nThis Node.js-specific ordering is a historical design decision. process.nextTick is useful for scheduling callbacks that should run before I/O events but can lead to I/O starvation if overused (recursive nextTick calls block the event loop).",
+    "category": "language"
+  },
+  {
+    "title": "JS Web Security: XSS Prevention",
+    "slug": "js-web-xss-prevention",
+    "track": "JavaScript",
+    "topic": "DOM/Web APIs",
+    "difficulty": "medium",
+    "description": "Which approach effectively prevents Cross-Site Scripting (XSS) when displaying user-generated content in the DOM?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Using innerHTML to insert content, but only from trusted users.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Using textContent/innerText for plain text, and sanitizing HTML with a library like DOMPurify before using innerHTML.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Encoding content in Base64 before inserting into the DOM.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Wrapping all content in a <pre> tag.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nXSS (Cross-Site Scripting) occurs when attacker-controlled HTML/JS is injected into a page. innerHTML parses and executes script tags and event handlers.\n\nSafe approaches:\n- textContent / innerText: treats input as plain text, no HTML parsing — always safe for text.\n- DOMPurify.sanitize(html): strips dangerous tags/attributes while preserving safe HTML.\n- Content Security Policy (CSP) header: blocks inline scripts even if injected.\n- React's JSX: escapes values in {} by default — dangerouslySetInnerHTML is the escape hatch.\n\nNever trust user input; always sanitize or encode before DOM insertion.",
+    "category": "language"
+  },
+  {
+    "title": "JS Closures: Temporal Dead Zone",
+    "slug": "js-web-temporal-dead-zone",
+    "track": "JavaScript",
+    "topic": "Closures",
+    "difficulty": "medium",
+    "description": "What is the Temporal Dead Zone (TDZ) in JavaScript?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The time between the browser receiving JS and the first script execution.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The region from the start of a block scope to the let/const declaration where accessing the variable throws a ReferenceError.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "A period where setTimeout callbacks are blocked from running.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The gap between Promise creation and its resolution.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nlet and const are hoisted to the top of their block scope but are NOT initialized until the declaration is reached. The TDZ is the gap between the start of the scope and the declaration.\n\n  {\n    console.log(x); // ReferenceError: Cannot access 'x' before initialization\n    let x = 5;\n  }\n\nContrast with var: var is hoisted AND initialized to undefined, so accessing it before declaration gives undefined (not an error).\n\nTDZ exists to catch programming bugs — accessing a variable before it is logically initialized is almost always a mistake.",
+    "category": "language"
+  },
+  {
+    "title": "C++ STL: vector vs deque",
+    "slug": "cpp-stl-vector-vs-deque",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "medium",
+    "description": "What is a key structural difference between `std::vector` and `std::deque`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "vector stores elements in linked nodes; deque uses a contiguous array.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "vector uses a single contiguous block; deque uses a sequence of fixed-size chunks, enabling O(1) push_front without reallocation.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "deque does not support random access by index.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "vector supports push_front in O(1); deque does not.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nstd::vector: one contiguous heap allocation. push_back is amortized O(1); push_front is O(n) (shifts all elements).\n\nstd::deque (double-ended queue): a map of pointers to fixed-size \"chunk\" arrays. Enables O(1) push_front AND push_back without moving existing elements. However, cache performance is worse than vector because memory is non-contiguous.\n\nBoth support O(1) random access by index. Use deque when you need efficient front insertions/removals; use vector for cache-friendly iteration and random access.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Pointers: Raw Pointer vs Smart Pointer",
+    "slug": "cpp-raw-vs-smart-pointer",
+    "track": "C++",
+    "topic": "Pointers & References",
+    "difficulty": "medium",
+    "description": "What ownership semantics does `std::unique_ptr` enforce?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Shared ownership — multiple unique_ptrs can point to the same object.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Exclusive ownership — only one unique_ptr owns the object; ownership can be transferred (moved) but not copied.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Weak ownership — the pointer does not prevent garbage collection.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "No ownership — it behaves exactly like a raw pointer.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nunique_ptr enforces single ownership:\n- Copy constructor and copy assignment are DELETED — you cannot copy a unique_ptr.\n- Move is allowed: std::move(ptr) transfers ownership; the original ptr becomes nullptr.\n- The owned object is automatically deleted when the unique_ptr goes out of scope (RAII).\n\nContrast:\n- shared_ptr: reference-counted shared ownership. Deleted when last shared_ptr is destroyed.\n- weak_ptr: non-owning observer of a shared_ptr. Does not affect the reference count. Used to break circular references.\n\nPrefer unique_ptr by default; use shared_ptr only when shared ownership is genuinely needed.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Memory: Stack vs Heap Allocation",
+    "slug": "cpp-stack-vs-heap-allocation",
+    "track": "C++",
+    "topic": "Memory Management",
+    "difficulty": "easy",
+    "description": "What happens to a locally declared object when the function returns in C++?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It is moved to the heap automatically by the compiler.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Its destructor is called and its memory on the stack is automatically reclaimed.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It persists until the program ends unless explicitly deleted.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The garbage collector frees it asynchronously.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nC++ has no garbage collector. Stack-allocated objects (declared without new) have automatic storage duration: their destructor runs deterministically when the enclosing scope exits, and the stack frame is popped.\n\nRAII (Resource Acquisition Is Initialization) leverages this: file handles, mutex locks, and smart pointers release their resources in destructors — guaranteed even if an exception is thrown.\n\nHeap allocations (new/delete) persist until explicitly freed. Forgetting delete causes memory leaks; double-deleting causes undefined behavior. Smart pointers (unique_ptr, shared_ptr) automate this.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Move Semantics: rvalue References",
+    "slug": "cpp-rvalue-references",
+    "track": "C++",
+    "topic": "Move Semantics",
+    "difficulty": "hard",
+    "description": "What is the purpose of an rvalue reference (`T&&`) in C++11?",
+    "options": [
+      {
+        "key": "A",
+        "text": "To create a constant reference that cannot be modified.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "To bind to temporary (rvalue) objects and enable move semantics — transferring resources instead of copying them.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "To pass arguments by value with automatic type deduction.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "To declare a universal reference that binds to both lvalues and rvalues.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nT&& (rvalue reference) binds to temporaries. Combined with a move constructor / move assignment operator, it enables \"stealing\" resources (heap memory, file descriptors) from a temporary instead of copying.\n\n  std::vector<int> a = {1, 2, 3};\n  std::vector<int> b = std::move(a); // move: O(1) pointer swap, a is empty\n\nMove vs Copy:\n- Copy: deep-duplicates all data — O(n).\n- Move: transfers ownership of internal buffer — O(1).\n\nstd::move casts an lvalue to an rvalue reference, signaling \"this object can be pillaged.\" After a move, the source is in a valid but unspecified state.\n\nNote: T&& in a template (auto&&) is a \"forwarding reference\" (universal reference) — different from a plain rvalue reference.",
+    "category": "language"
+  },
+  {
+    "title": "C++ STL: map vs unordered_map",
+    "slug": "cpp-map-vs-unordered-map",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "medium",
+    "description": "When should you prefer `std::unordered_map` over `std::map`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "When you need keys stored in sorted order.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "When you need O(1) average-case lookup and insertion and do not require ordered iteration.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "When memory usage is the primary concern.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "When keys do not have a hash function defined.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nstd::map: red-black tree. O(log n) for all operations. Keys always in sorted order. No hash function needed.\n\nstd::unordered_map: hash table. O(1) average for insert/lookup/erase; O(n) worst case (all keys in same bucket). No ordering guarantee.\n\nChoose:\n- map: when sorted order or range queries (lower_bound) are needed.\n- unordered_map: when raw speed matters and keys have a good hash (arithmetic types, std::string).\n\nCustom hash: specialize std::hash<T> or provide a hash functor to unordered_map.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Memory: RAII Pattern",
+    "slug": "cpp-raii-pattern",
+    "track": "C++",
+    "topic": "Memory Management",
+    "difficulty": "medium",
+    "description": "What does RAII (Resource Acquisition Is Initialization) mean in C++?",
+    "options": [
+      {
+        "key": "A",
+        "text": "All resources must be allocated in global scope at program startup.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Resource lifetime is tied to object lifetime: acquired in the constructor, released in the destructor — ensuring cleanup even on exceptions.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Resources are initialized lazily on first access.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Resources must be explicitly freed before the object goes out of scope.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nRAII is C++'s primary resource management idiom:\n\n  class MutexGuard {\n    std::mutex& m;\n  public:\n    MutexGuard(std::mutex& m) : m(m) { m.lock(); }  // acquire\n    ~MutexGuard() { m.unlock(); }                    // release\n  };\n  void critical() {\n    MutexGuard g(mtx); // locked\n    // ... exception-safe work ...\n  } // g.~MutexGuard() called → unlock guaranteed\n\nStandard RAII wrappers: unique_ptr (heap memory), lock_guard (mutexes), fstream (files), shared_ptr.\n\nRAII makes code exception-safe without try/finally (which C++ lacks).",
+    "category": "language"
+  },
+  {
+    "title": "C++ DSA: Complexity of std::sort",
+    "slug": "cpp-stl-sort-complexity",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "easy",
+    "description": "What is the time complexity guarantee of `std::sort` in C++?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(n²) worst case, O(n log n) average.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "O(n log n) worst case — guaranteed by the C++ standard.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "O(n) for nearly sorted data.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(n log² n) due to the merge sort implementation.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nSince C++11, std::sort guarantees O(n log n) worst-case complexity. Most implementations use Introsort: a hybrid of Quicksort, Heapsort, and Insertion sort.\n\nIntrosort strategy:\n- Begin with Quicksort (fast in practice).\n- Monitor recursion depth; if it exceeds 2·log₂(n), switch to Heapsort (O(n log n) worst case, no O(n²) risk).\n- For small subarrays (≤ ~16 elements), switch to Insertion sort (low overhead, cache-friendly).\n\nstd::stable_sort guarantees O(n log² n) worst case (or O(n log n) with extra memory) and preserves relative order of equal elements.",
+    "category": "dsa"
+  },
+  {
+    "title": "C++ Pointers: Pointer Arithmetic",
+    "slug": "cpp-pointer-arithmetic",
+    "track": "C++",
+    "topic": "Pointers & References",
+    "difficulty": "medium",
+    "description": "What does `ptr + 1` mean when `ptr` is a `int*` pointing to an array element?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It adds 1 byte to the memory address.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It advances the pointer by sizeof(int) bytes, pointing to the next int element.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It increments the value pointed to by ptr.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It throws an out-of-bounds exception if the next element does not exist.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nPointer arithmetic scales by the size of the pointed-to type:\n  int arr[] = {10, 20, 30};\n  int* p = arr;       // p points to arr[0]\n  int* q = p + 1;     // q points to arr[1] (address = p + sizeof(int) = p + 4)\n  int* r = p + 2;     // r points to arr[2]\n\nThis is why arrays and pointers are interchangeable in C/C++: arr[i] is syntactic sugar for *(arr + i).\n\nC++ does NOT bounds-check pointer arithmetic — going out of array bounds is undefined behavior. Use iterators, std::span (C++20), or range-based for loops for safe traversal.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Move Semantics: Perfect Forwarding",
+    "slug": "cpp-perfect-forwarding",
+    "track": "C++",
+    "topic": "Move Semantics",
+    "difficulty": "hard",
+    "description": "What problem does `std::forward` solve in a templated function?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It converts rvalue references to lvalue references for compatibility.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It preserves the value category (lvalue/rvalue) of an argument when forwarding it to another function, avoiding unnecessary copies.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It automatically detects whether to use std::move or std::copy.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It is an alias for std::move.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nWithout perfect forwarding, named parameters are always lvalues inside a function, even if passed as rvalues. std::forward restores the original value category:\n\n  template <typename T>\n  void wrapper(T&& arg) {\n    target(std::forward<T>(arg)); // lvalue stays lvalue, rvalue stays rvalue\n  }\n\n  wrapper(42);          // rvalue → target receives rvalue (enables move)\n  wrapper(myVector);    // lvalue → target receives lvalue (copy, not move)\n\nWithout std::forward, both calls would pass arg as an lvalue, defeating move semantics. This pattern is used in std::make_unique, std::make_shared, emplace_back, and any factory function.",
+    "category": "language"
+  },
+  {
+    "title": "C++ DSA: Priority Queue Implementation",
+    "slug": "cpp-dsa-priority-queue",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "medium",
+    "description": "What data structure backs `std::priority_queue` in C++, and what is its default ordering?",
+    "options": [
+      {
+        "key": "A",
+        "text": "A sorted std::vector; ascending order (min element at top).",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A max-heap backed by std::vector; the largest element is at the top.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "A red-black tree; sorted in insertion order.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "A linked list; FIFO ordering.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nstd::priority_queue<T> is a container adapter backed by std::vector<T> using std::make_heap/push_heap/pop_heap (max-heap by default).\n\n  priority_queue<int> pq; // max-heap\n  pq.push(3); pq.push(1); pq.push(4);\n  pq.top(); // 4\n\nFor a min-heap:\n  priority_queue<int, vector<int>, greater<int>> minPQ;\n\nCommon use cases: Dijkstra's algorithm, K largest elements, merge K sorted lists, task scheduling.\n\nHeap operations: push O(log n), top O(1), pop O(log n).",
+    "category": "dsa"
+  },
+  {
+    "title": "C++ Memory: new vs malloc",
+    "slug": "cpp-new-vs-malloc",
+    "track": "C++",
+    "topic": "Memory Management",
+    "difficulty": "easy",
+    "description": "What is a critical difference between `new` and `malloc` in C++?",
+    "options": [
+      {
+        "key": "A",
+        "text": "malloc is faster; new calls the OS for memory on every call.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "new calls the constructor and throws std::bad_alloc on failure; malloc only allocates raw memory and returns nullptr on failure.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "They are interchangeable; free() can be used with new.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "malloc zero-initializes memory; new does not.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nnew vs malloc:\n| Feature           | new               | malloc          |\n|-------------------|-------------------|-----------------|\n| Type safety       | Typed             | Returns void*   |\n| Constructor call  | Yes               | No              |\n| Failure behavior  | throws bad_alloc  | returns nullptr |\n| Deallocation      | delete / delete[] | free()          |\n\nNEVER mix: do not new then free(), or malloc then delete — undefined behavior.\nIn modern C++: prefer stack allocation, std::vector, or smart pointers. Raw new/delete is a code smell in new code.",
+    "category": "language"
+  },
+  {
+    "title": "C++ Pointers: Dangling Pointer",
+    "slug": "cpp-dangling-pointer",
+    "track": "C++",
+    "topic": "Pointers & References",
+    "difficulty": "medium",
+    "description": "What is a dangling pointer?",
+    "options": [
+      {
+        "key": "A",
+        "text": "A pointer that has been initialized to nullptr.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A pointer that holds the address of memory that has been freed or gone out of scope, making dereferencing it undefined behavior.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "A pointer to a virtual function table.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "A pointer that is not aligned to a word boundary.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nCommon dangling pointer scenarios:\n\n1. delete then use:\n   int* p = new int(5);\n   delete p;\n   *p = 10; // undefined behavior — dangling\n\n2. Returning address of local variable:\n   int* bad() { int x = 5; return &x; } // x is destroyed on return\n\n3. Iterator invalidation: after vector::push_back causes reallocation, old iterators/pointers into the vector are invalid.\n\nPrevention: set pointers to nullptr after delete; use smart pointers (unique_ptr); prefer references and std::span over raw pointers.",
+    "category": "language"
+  },
+  {
+    "title": "C++ STL: emplace_back vs push_back",
+    "slug": "cpp-emplace-vs-push-back",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "medium",
+    "description": "Why is `emplace_back` generally preferred over `push_back` for complex objects?",
+    "options": [
+      {
+        "key": "A",
+        "text": "emplace_back is thread-safe; push_back is not.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "emplace_back constructs the object in-place using forwarded arguments, avoiding a temporary object creation and potential copy/move.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "push_back cannot store objects larger than 64 bytes.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "emplace_back validates the object before inserting.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\npush_back(obj): takes an already-constructed object, then copy- or move-constructs it into the vector's storage. At least one copy or move is needed.\n\nemplace_back(args...): forwards the constructor arguments directly into the vector's allocated memory using placement new. Constructs the object in-place — zero copies or moves.\n\n  vector<pair<int,string>> v;\n  v.push_back({1, \"hello\"});       // creates temp pair, then moves it\n  v.emplace_back(1, \"hello\");      // constructs pair directly in vector — no temp\n\nFor trivially constructible types, the difference is negligible. For types with expensive constructors or deleted copy/move, emplace_back may be the only viable option.",
+    "category": "language"
+  },
+  {
+    "title": "C++ DSA: Dynamic Programming — Overlapping Subproblems",
+    "slug": "cpp-dsa-dp-overlapping-subproblems",
+    "track": "C++",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "Which of the following correctly describes the difference between memoization (top-down DP) and tabulation (bottom-up DP)?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Memoization uses iteration; tabulation uses recursion.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Memoization is recursive with a cache (computes only needed subproblems); tabulation fills a table iteratively (computes all subproblems).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Both have the same space complexity in all cases.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Tabulation cannot solve problems where the recurrence depends on future states.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nMemoization (top-down):\n  int fib(int n, unordered_map<int,int>& memo) {\n    if (n <= 1) return n;\n    if (memo.count(n)) return memo[n];\n    return memo[n] = fib(n-1, memo) + fib(n-2, memo);\n  }\n- Computes only the subproblems actually needed.\n- Has function call overhead; risk of stack overflow for deep recursion.\n\nTabulation (bottom-up):\n  vector<int> dp(n+1);\n  dp[0]=0; dp[1]=1;\n  for (int i=2;i<=n;i++) dp[i]=dp[i-1]+dp[i-2];\n- Iterative — no recursion overhead.\n- Always fills the entire table even if some entries aren't needed.\n- Usually has better cache performance.",
+    "category": "dsa"
+  },
+  {
+    "title": "C++ Move Semantics: Rule of Five",
+    "slug": "cpp-rule-of-five",
+    "track": "C++",
+    "topic": "Move Semantics",
+    "difficulty": "hard",
+    "description": "The \"Rule of Five\" in C++11+ states that if a class defines any of these, it should define all five. Which five?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Constructor, Destructor, Copy constructor, operator==, operator<",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Destructor, Copy constructor, Copy assignment, Move constructor, Move assignment.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Constructor, Destructor, Copy constructor, toString, hashCode.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Copy constructor, Move constructor, operator=, operator[], operator().",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nThe Rule of Five (extending the C++03 Rule of Three):\nIf your class manages a resource (heap memory, file handle, socket), you must explicitly define:\n1. Destructor — frees the resource.\n2. Copy constructor — deep-copies the resource.\n3. Copy assignment operator — deep-copies (and releases old resource).\n4. Move constructor (C++11) — transfers ownership.\n5. Move assignment operator (C++11) — transfers ownership (releases old resource).\n\nFailing to define any one allows the compiler to generate a default that may do a shallow copy (double-free) or suppress move operations.\n\nRule of Zero: prefer wrapping resources in smart pointers/RAII classes so no special functions are needed.",
+    "category": "language"
+  },
+  {
+    "title": "C++ DSA: Graph Representation — Adjacency List vs Matrix",
+    "slug": "cpp-dsa-graph-representation",
+    "track": "C++",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "For a sparse graph with V vertices and E edges (E << V²), which representation is more space-efficient?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Adjacency matrix — O(V²) space but O(1) edge lookup.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Adjacency list — O(V + E) space, more efficient for sparse graphs.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Both use the same space for sparse graphs.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Edge list — always the most space-efficient regardless of density.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nAdjacency Matrix: V×V boolean/weight matrix. O(V²) space regardless of edges. Edge lookup O(1). Inefficient for sparse graphs.\n\nAdjacency List: vector<vector<int>> or unordered_map<int, vector<int>>. O(V + E) space. Edge lookup O(degree(v)).\n\n  vector<vector<int>> adj(V); // adjacency list\n  adj[u].push_back(v);        // add edge u→v\n\nWhen to use matrix: dense graphs (E ≈ V²), need to check edge existence frequently.\nWhen to use list: sparse graphs (E << V²), BFS/DFS traversals, most competitive programming problems.",
+    "category": "dsa"
+  },
+  {
+    "title": "C++ STL: Iterators and Iterator Invalidation",
+    "slug": "cpp-iterator-invalidation",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "hard",
+    "description": "What happens to a `std::vector` iterator after a `push_back` that causes reallocation?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The iterator automatically updates to the new memory location.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The iterator becomes invalid (dangling) — dereferencing or comparing it is undefined behavior.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "The iterator throws a std::out_of_range exception when used.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Only iterators pointing past the inserted element are invalidated.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\npush_back may trigger reallocation (when size == capacity). The vector allocates a new, larger buffer and moves/copies all elements. The old buffer is freed. Any iterator, pointer, or reference into the old buffer is now a dangling pointer — using it is undefined behavior.\n\nSafe pattern: call reserve() upfront to prevent reallocation:\n  v.reserve(100); // pre-allocate, no reallocation for 100 elements\n\nInvalidation rules summary:\n- vector: all iterators invalidated on reallocation; insertion in middle invalidates from insertion point onward.\n- deque: all iterators invalidated on push_front/push_back.\n- list, map, set: iterators remain valid across insertions/deletions (except the erased node).",
+    "category": "language"
+  },
+  {
+    "title": "C++ Pointers: const Pointer vs Pointer to const",
+    "slug": "cpp-const-pointer-vs-pointer-to-const",
+    "track": "C++",
+    "topic": "Pointers & References",
+    "difficulty": "medium",
+    "description": "What is the difference between `const int* p` and `int* const p`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "They are identical — both prevent any modification.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "const int* p: the pointed-to value cannot be changed (pointer to const); int* const p: the pointer itself cannot be reseated (const pointer).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "const int* p prevents reseating; int* const p prevents value modification.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Both declarations are invalid C++.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nRead right-to-left (clockwise/spiral rule):\n\nconst int* p   → p is a pointer to const int. *p cannot be changed; p can be reseated.\n  (*p = 5);   // ERROR\n  p = &other; // OK\n\nint* const p   → p is a const pointer to int. p cannot be reseated; *p can be changed.\n  (*p = 5);   // OK\n  p = &other; // ERROR\n\nconst int* const p → both the pointer and the value are const.\n\nMnemonic: \"const applies to what is on its LEFT (or to the type if nothing is on its left).\"",
+    "category": "language"
+  },
+  {
+    "title": "C++ DSA: Segment Tree Use Case",
+    "slug": "cpp-dsa-segment-tree",
+    "track": "C++",
+    "topic": "DSA",
+    "difficulty": "hard",
+    "description": "When is a Segment Tree preferred over a Fenwick Tree (Binary Indexed Tree)?",
+    "options": [
+      {
+        "key": "A",
+        "text": "When you only need prefix sum queries — Fenwick trees are too complex.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "When you need range queries with arbitrary associative functions (min, max, GCD) that are not easily invertible, or need range updates with lazy propagation.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Segment trees use less memory than Fenwick trees.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Fenwick trees cannot handle point updates.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nFenwick Tree (BIT): O(n) space, O(log n) point update and prefix-query. Ideal for prefix sums and problems where the operation is invertible (sum, XOR). Simpler to implement.\n\nSegment Tree: O(4n) space, O(log n) point or range update, O(log n) range query. Handles any associative operation: sum, min, max, GCD, bitwise AND/OR.\n\nWith lazy propagation, segment trees support O(log n) range updates (e.g., add X to all elements in [L, R]).\n\nUse BIT for prefix sums; use Segment Tree when you need range-min/max or non-invertible operations, or lazy range updates.",
+    "category": "dsa"
+  },
+  {
+    "title": "C++ STL: Lambda Expressions and std::function",
+    "slug": "cpp-lambda-expressions-std-function",
+    "track": "C++",
+    "topic": "STL Containers",
+    "difficulty": "medium",
+    "description": "What is the difference between capturing by value (`[=]`) and capturing by reference (`[&]`) in a C++ lambda?",
+    "options": [
+      {
+        "key": "A",
+        "text": "[=] captures all local variables by reference; [&] captures by value — making the lambda safe to return.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "[=] copies all reachable local variables at lambda creation time; [&] holds references to them — dangling if the lambda outlives the scope.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Both are identical; the compiler chooses the most efficient one automatically.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "[&] is only valid inside member functions; [=] works everywhere.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nLambda capture modes:\n  int x = 10;\n  auto byVal = [=]() { return x + 1; };  // x copied at definition — safe after x goes out of scope\n  auto byRef = [&]() { return x + 1; };  // x referenced — dangling if x destroyed before lambda call\n\nBest practices:\n- Prefer [=] for lambdas stored (e.g., passed to std::thread, stored in std::function) beyond their creation scope.\n- Prefer [&] for short-lived lambdas (e.g., std::sort comparator, std::for_each body) where the enclosing scope outlives the lambda.\n- Explicit capture [x, &y] — capture x by value and y by reference — is clearest.\n\nstd::function<int(int)> can store any callable (lambda, functor, function pointer) with a matching signature, enabling type-erasure.",
+    "category": "language"
+  },
+  {
+    "title": "Python CPython: How Python Executes Code",
+    "slug": "python-cpython-execution",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "medium",
+    "description": "Describe CPython's execution pipeline from source code to execution.",
+    "options": [
+      {
+        "key": "A",
+        "text": "Source → native machine code (AOT) → executed directly by CPU.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Source → tokens → AST → bytecode (.pyc) → interpreted by PVM (Python Virtual Machine).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Source → JIT-compiled native code on first run, cached thereafter.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Source → LLVM IR → native code via LLVM backend.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nCPython pipeline:\n1. Lexer: source text → token stream.\n2. Parser: tokens → Abstract Syntax Tree (AST).\n3. Compiler: AST → bytecode (stored in .pyc files in __pycache__).\n4. PVM: CPython's interpreter loop (ceval.c) executes bytecode instruction-by-instruction.\n\nInspect bytecode:\n  import dis\n  def add(a, b): return a + b\n  dis.dis(add)\n\nCPython does NOT JIT-compile. PyPy uses a tracing JIT for orders-of-magnitude speedup on CPU-bound loops. Cython and Numba are tools for compiling Python to C or LLVM IR.",
+    "category": "language"
+  },
+  {
+    "title": "Python GIL: Global Interpreter Lock Impact",
+    "slug": "python-gil-impact",
+    "track": "Python",
+    "topic": "GIL",
+    "difficulty": "hard",
+    "description": "Why does Python's GIL limit CPU-bound multithreading but NOT I/O-bound multithreading?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The GIL is released during I/O operations, allowing other threads to run while one thread waits for I/O.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "I/O operations are faster and complete before the GIL can be acquired.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Python uses process-level parallelism for I/O automatically.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The GIL only applies to memory allocation, not I/O.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nThe GIL is a mutex in CPython that allows only one thread to execute Python bytecode at a time. This prevents data corruption of CPython's reference counts.\n\nFor CPU-bound work (number crunching): threads compete for the GIL. Only one runs at a time → no speedup from threads → use multiprocessing.Process instead (separate GIL per process).\n\nFor I/O-bound work (network, disk): Python releases the GIL during blocking I/O syscalls (read, recv, etc.). While Thread A waits for a network response, Thread B can run Python code. Threads ARE effective for I/O concurrency.\n\nPython 3.13+ introduces a \"no-GIL\" build (PEP 703) as an experimental option.",
+    "category": "language"
+  },
+  {
+    "title": "Python Dict: Dictionary Implementation",
+    "slug": "python-dict-implementation",
+    "track": "Python",
+    "topic": "Dict/List Optimizations",
+    "difficulty": "hard",
+    "description": "How does CPython's dict maintain insertion order (since Python 3.7)?",
+    "options": [
+      {
+        "key": "A",
+        "text": "By using a linked list to chain all key-value pairs in insertion order.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "By using a compact array of key-value entries plus a sparse hash table of indices into that array.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "By sorting keys alphabetically on each insertion.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "By delegating to OrderedDict internally.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nPython 3.6+ (CPython) uses a \"compact dict\" design (PEP 468 formalized in 3.7):\n\nTwo structures:\n1. Entries array: a dense, compact array of (hash, key, value) tuples in insertion order.\n2. Indices table: a sparse hash table mapping hash slots → index into the entries array.\n\nBenefits:\n- Insertion order preserved (entries array is append-only).\n- 20-25% less memory vs the old fully-sparse hash table.\n- O(1) average lookup, insert, delete.\n\nWhen a dict is full, it resizes (doubles) and rebuilds the indices table. Deleted entries become \"dummies\" in the indices table.",
+    "category": "language"
+  },
+  {
+    "title": "Python List: List Comprehension vs map/filter",
+    "slug": "python-list-comprehension-vs-map",
+    "track": "Python",
+    "topic": "Dict/List Optimizations",
+    "difficulty": "easy",
+    "description": "Why are list comprehensions generally preferred over `map()`/`filter()` in Python 3?",
+    "options": [
+      {
+        "key": "A",
+        "text": "List comprehensions are always faster due to SIMD vectorization.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "List comprehensions are more readable, Pythonic, and can combine mapping and filtering in a single expression without lambda syntax.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "map() and filter() are deprecated in Python 3.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "map() creates an eager list; list comprehensions are lazy.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nPython 3 map() and filter() return lazy iterators (not lists). To get a list: list(map(fn, iterable)).\n\nList comprehension equivalent:\n  [x * 2 for x in range(10) if x % 2 == 0]\n  # vs:\n  list(map(lambda x: x*2, filter(lambda x: x%2==0, range(10))))\n\nComprehension advantages:\n- More readable (reads like English: \"x*2 for x in ... if ...\").\n- No lambda needed.\n- Slightly faster in CPython for simple operations (optimized bytecode for list comprehension).\n\nFor lazy evaluation (streaming large data), generator expressions are preferred: (x*2 for x in ...).",
+    "category": "language"
+  },
+  {
+    "title": "Python Generators: yield and Lazy Evaluation",
+    "slug": "python-generators-yield",
+    "track": "Python",
+    "topic": "Generators",
+    "difficulty": "medium",
+    "description": "What is the memory advantage of using a generator over a list for processing a large file?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Generators compress data in memory using zlib.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Generators produce one item at a time on demand (lazy), holding only one item in memory at once, vs a list that stores all items simultaneously.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Generators use shared memory across threads.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Generators automatically page data to disk when memory is full.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  def read_large_file(path):\n    with open(path) as f:\n      for line in f:\n        yield line.strip()\n\n  for line in read_large_file('bigfile.txt'):\n    process(line)  # only one line in memory at a time\n\nA list comprehension [line.strip() for line in f] would load the ENTIRE file into memory.\n\nGenerators are Python's lazy iterators. They pause at each yield, resuming on next(). This enables:\n- Processing infinite streams.\n- Pipelines: (process(x) for x in read_large_file(path)) chains generators without intermediate lists.\n- Memory-efficient data processing (ETL, log parsing).",
+    "category": "language"
+  },
+  {
+    "title": "Python Decorators: Function Wrapping",
+    "slug": "python-decorators-function-wrapping",
+    "track": "Python",
+    "topic": "Decorators",
+    "difficulty": "medium",
+    "description": "What does the `@functools.wraps(func)` decorator do inside a custom decorator?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It makes the wrapper function run faster by caching its result.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It copies the wrapped function's metadata (__name__, __doc__, __module__) to the wrapper, preserving introspection.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It prevents the wrapper from being called more than once.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It automatically handles exceptions from the wrapped function.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nWithout @wraps:\n  def my_decorator(func):\n    def wrapper(*args, **kwargs):\n      return func(*args, **kwargs)\n    return wrapper\n\n  @my_decorator\n  def greet(): \"\"\"Says hello.\"\"\"\n  print(greet.__name__)  # 'wrapper' — wrong!\n  print(greet.__doc__)   # None — lost!\n\nWith @functools.wraps(func):\n  def my_decorator(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n      return func(*args, **kwargs)\n    return wrapper\n\n  @my_decorator\n  def greet(): \"\"\"Says hello.\"\"\"\n  print(greet.__name__)  # 'greet' — correct\n  print(greet.__doc__)   # 'Says hello.' — preserved\n\nEssential for debugging, help(), and tools like pytest that rely on function metadata.",
+    "category": "language"
+  },
+  {
+    "title": "Python CPython: Reference Counting GC",
+    "slug": "python-cpython-reference-counting",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "medium",
+    "description": "CPython primarily uses reference counting for garbage collection. What type of memory leak can it NOT handle on its own?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Objects with a refcount of zero.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Reference cycles (A → B → A), where refcounts never reach zero.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Large objects on the heap.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Global variables that are never deleted.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nCPython maintains a reference count (ob_refcnt) for every object. When it hits 0, the object is immediately freed (deterministic destruction — unlike GC-based languages).\n\nLimitation — cyclic garbage: if A.ref = B and B.ref = A, even when external code drops references to both, each still has refcount ≥ 1 (the cycle). Neither can be freed by reference counting alone.\n\nCPython's cyclic garbage collector (gc module, generational, runs periodically) handles this by detecting cycles and breaking them. You can trigger it with gc.collect().\n\nImplication: __del__ finalizers on objects in cycles may not run promptly. Avoid __del__ on cycle-participating objects.",
+    "category": "language"
+  },
+  {
+    "title": "Python GIL: multiprocessing vs threading",
+    "slug": "python-multiprocessing-vs-threading",
+    "track": "Python",
+    "topic": "GIL",
+    "difficulty": "medium",
+    "description": "When should you use `multiprocessing` instead of `threading` in Python?",
+    "options": [
+      {
+        "key": "A",
+        "text": "When performing network I/O operations with many connections.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "When performing CPU-bound tasks that need true parallelism, since each process has its own GIL.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "When you need to share large amounts of mutable state between workers.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "When you want lower memory overhead than threads.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nCPython threading: all threads share one GIL. CPU-bound threads take turns holding the GIL → no parallel CPU execution. Threads share memory (easy state sharing, requires synchronization).\n\nmultiprocessing: each Process has its own CPython interpreter and GIL. True parallel CPU execution on multi-core machines. Separate memory spaces → no GIL contention, but data sharing requires IPC (Queue, Pipe, Manager, shared memory).\n\nDecision guide:\n- I/O-bound (network, disk) → threading or asyncio.\n- CPU-bound (number crunching, ML) → multiprocessing or subprocess.\n- Avoid GIL entirely → use Cython, NumPy (releases GIL for C extensions), or PyPy.",
+    "category": "language"
+  },
+  {
+    "title": "Python Decorators: Class-Based Decorators",
+    "slug": "python-class-based-decorators",
+    "track": "Python",
+    "topic": "Decorators",
+    "difficulty": "hard",
+    "description": "How can a class be used as a decorator?",
+    "options": [
+      {
+        "key": "A",
+        "text": "By inheriting from the built-in decorator class.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "By implementing __call__ so instances are callable; instances can then be used as decorators that wrap functions.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Classes cannot be used as decorators in Python.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "By implementing __init__ with a func parameter only.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nA decorator is simply a callable that takes a function and returns a callable. A class with __call__ satisfies this:\n\n  class retry:\n    def __init__(self, times):\n      self.times = times\n    def __call__(self, func):\n      @functools.wraps(func)\n      def wrapper(*args, **kwargs):\n        for attempt in range(self.times):\n          try: return func(*args, **kwargs)\n          except Exception as e:\n            if attempt == self.times - 1: raise\n      return wrapper\n\n  @retry(times=3)\n  def flaky_api_call(): ...\n\nClass decorators are useful when decorators need state (e.g., call counts, caches) or complex configuration.",
+    "category": "language"
+  },
+  {
+    "title": "Python List: Dynamic Array Growth",
+    "slug": "python-list-dynamic-array",
+    "track": "Python",
+    "topic": "Dict/List Optimizations",
+    "difficulty": "medium",
+    "description": "Python's `list` is a dynamic array. What happens internally when `append()` exceeds the current allocated capacity?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The list switches to a linked list representation.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A larger buffer (roughly 1.125× growth factor) is allocated, existing elements are copied, and the old buffer is freed.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "The list raises a MemoryError.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The list stops accepting new elements until old ones are removed.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nCPython list uses over-allocation with a growth pattern approximately: 0, 4, 8, 16, 25, 35, 46, 58, 72, 88... (roughly proportional to n * 1.125 for larger lists).\n\nThis amortizes the O(n) copy cost: although each individual resize is O(n), the amortized cost per append is O(1).\n\nCheck allocated capacity:\n  import sys\n  l = []\n  for i in range(20):\n    l.append(i)\n    print(len(l), sys.getsizeof(l))\n\nPre-allocate if size is known:\n  l = [None] * 1000  # avoids repeated reallocations\n  # or use collections.deque for O(1) both ends",
+    "category": "language"
+  },
+  {
+    "title": "Python DSA: defaultdict and Counter",
+    "slug": "python-dsa-defaultdict-counter",
+    "track": "Python",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "What is the difference between `collections.defaultdict(list)` and a regular `dict`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "defaultdict is faster for all operations.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "defaultdict returns a default value (from the factory) when accessing a missing key, instead of raising KeyError.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "defaultdict can only store list values.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "defaultdict sorts keys automatically.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  from collections import defaultdict\n\n  # Regular dict\n  d = {}\n  d['a'].append(1)  # KeyError!\n\n  # defaultdict\n  dd = defaultdict(list)\n  dd['a'].append(1)  # auto-creates dd['a'] = [] first\n  dd['a'].append(2)  # dd == {'a': [1, 2]}\n\nCommon factories:\n- defaultdict(list)  → missing key returns []\n- defaultdict(int)   → missing key returns 0 (great for counting)\n- defaultdict(set)   → missing key returns set()\n\nCounter is a specialized dict for counting:\n  from collections import Counter\n  c = Counter('aabbc')  # Counter({'a': 2, 'b': 2, 'c': 1})\n  c.most_common(2)      # [('a', 2), ('b', 2)]",
+    "category": "dsa"
+  },
+  {
+    "title": "Python Generators: send() and Two-Way Communication",
+    "slug": "python-generators-send",
+    "track": "Python",
+    "topic": "Generators",
+    "difficulty": "hard",
+    "description": "What does `generator.send(value)` do differently from `next(generator)`?",
+    "options": [
+      {
+        "key": "A",
+        "text": "send() restarts the generator from the beginning with a new argument.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "send(value) resumes the generator AND injects value as the result of the current yield expression; next() injects None.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "send() is only valid for async generators.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "They are identical — send(None) is the same as next().",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nsend(value) IS the same as next() when value is None (send(None) == next()). But send(value) with a non-None value injects that value as the result of the paused yield expression:\n\n  def accumulator():\n    total = 0\n    while True:\n      x = yield total\n      total += x\n\n  g = accumulator()\n  next(g)       # prime: runs to first yield, returns 0\n  g.send(10)    # x = 10, total = 10, returns 10\n  g.send(5)     # x = 5,  total = 15, returns 15\n\nThis two-way communication makes generators usable as coroutines. Python's asyncio was originally built on generator-based coroutines (@asyncio.coroutine + yield from) before async/await syntax.",
+    "category": "language"
+  },
+  {
+    "title": "Python CPython: __slots__ Optimization",
+    "slug": "python-cpython-slots",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "hard",
+    "description": "What does defining `__slots__` in a Python class do?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It restricts the class to single inheritance.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It replaces the instance __dict__ with a fixed-size array of slot descriptors, reducing memory usage per instance and speeding up attribute access.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It makes all attributes read-only.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It enables multiple dispatch for methods.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nBy default, every Python instance has a __dict__ (a hash table) for dynamic attribute storage. This adds ~200 bytes overhead per instance.\n\n  class Point:\n    __slots__ = ('x', 'y')\n    def __init__(self, x, y):\n      self.x = x; self.y = y\n\nWith __slots__:\n- No __dict__ per instance — attributes stored in a fixed C array (slot descriptors on the class).\n- Memory per instance reduced by ~40-50% for simple classes.\n- Attribute access slightly faster (no dict lookup).\n- Cannot add arbitrary attributes (p.z = 3 raises AttributeError).\n\nIdeal for classes that create millions of instances (e.g., graph nodes, event objects).",
+    "category": "language"
+  },
+  {
+    "title": "Python DSA: Heapq Module",
+    "slug": "python-dsa-heapq",
+    "track": "Python",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "Python's `heapq` module implements a min-heap. How do you use it to implement a max-heap?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Call heapq.heapify_max(lst) on the list.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Negate the values before insertion and negate them again on extraction.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Pass reverse=True to heapq.heappush.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Use heapq.nlargest() which internally maintains a max-heap.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nPython's heapq is always a min-heap. Max-heap trick — negate values:\n\n  import heapq\n  h = []\n  heapq.heappush(h, -10)\n  heapq.heappush(h, -5)\n  heapq.heappush(h, -20)\n  max_val = -heapq.heappop(h)  # 20\n\nFor objects, negate the priority key: heapq.heappush(h, (-priority, item)).\n\nUseful heapq functions:\n- heapq.nlargest(k, iterable) — k largest elements.\n- heapq.nsmallest(k, iterable) — k smallest elements.\n- heapq.merge(*iterables) — merge sorted iterables lazily.\n\nheapq operations: push O(log n), pop O(log n), peek h[0] O(1).",
+    "category": "dsa"
+  },
+  {
+    "title": "Python Decorators: @property",
+    "slug": "python-property-decorator",
+    "track": "Python",
+    "topic": "Decorators",
+    "difficulty": "easy",
+    "description": "What does the `@property` decorator enable in Python?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It makes a method static (no self parameter).",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It allows a method to be accessed like an attribute (without parentheses), enabling computed properties and controlled attribute access.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It caches the method's return value permanently.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It marks the method as abstract.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  class Circle:\n    def __init__(self, radius):\n      self._radius = radius\n\n    @property\n    def area(self):\n      return 3.14 * self._radius ** 2\n\n    @property\n    def radius(self): return self._radius\n\n    @radius.setter\n    def radius(self, value):\n      if value < 0: raise ValueError('Radius must be non-negative')\n      self._radius = value\n\n  c = Circle(5)\n  print(c.area)    # 78.5 (no parentheses needed)\n  c.radius = 10    # calls setter\n\n@property enables the uniform access principle: client code accesses computed values like plain attributes without knowing the implementation. Add validation in setters without changing the public API.",
+    "category": "language"
+  },
+  {
+    "title": "Python GIL: asyncio vs Threading",
+    "slug": "python-asyncio-vs-threading",
+    "track": "Python",
+    "topic": "GIL",
+    "difficulty": "hard",
+    "description": "How does Python's `asyncio` (async/await) differ from OS threading for I/O concurrency?",
+    "options": [
+      {
+        "key": "A",
+        "text": "asyncio uses multiple threads; threading uses a single thread with callbacks.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "asyncio uses cooperative multitasking in a single thread (coroutines yield at await points); threading uses OS-scheduled preemptive context switches between threads.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "They are identical — asyncio is just syntactic sugar over threading.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "asyncio is only for CPU-bound tasks; threading is only for I/O.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nasyncio: single-threaded event loop. Coroutines voluntarily yield at each await (cooperative scheduling). No thread switching overhead, no locks needed for shared state within a single event loop. Excellent for high-concurrency I/O (thousands of connections).\n\nthreading: OS-scheduled. Threads are preempted between bytecode instructions (GIL check interval). Requires locks for shared mutable state. Context switch overhead is higher. Better for blocking code that cannot be made async (e.g., legacy libraries).\n\nasyncio wins for:\n- Many concurrent I/O-bound tasks (web servers, scrapers, WebSocket clients).\n- Code that can use async-native libraries (aiohttp, asyncpg).\n\nThreading wins for:\n- Integrating with synchronous/blocking libraries.\n- Simpler mental model for a small number of concurrent tasks.",
+    "category": "language"
+  },
+  {
+    "title": "Python DSA: Trie Data Structure",
+    "slug": "python-dsa-trie",
+    "track": "Python",
+    "topic": "DSA",
+    "difficulty": "hard",
+    "description": "What is the time complexity of searching for a word in a Trie of N words with maximum word length L?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(N)",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "O(L)",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "O(N * L)",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(log N)",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — O(L)\n\nA Trie search traverses one node per character of the query. It is completely independent of the number of words N stored. For a word of length L, the search visits exactly L nodes.\n\nPython Trie:\n  class TrieNode:\n    def __init__(self):\n      self.children = {}\n      self.is_end = False\n\n  class Trie:\n    def __init__(self): self.root = TrieNode()\n    def insert(self, word):\n      node = self.root\n      for ch in word:\n        node = node.children.setdefault(ch, TrieNode())\n      node.is_end = True\n    def search(self, word):\n      node = self.root\n      for ch in word: \n        if ch not in node.children: return False\n        node = node.children[ch]\n      return node.is_end\n\nUse cases: autocomplete, spell-check, IP routing, word search puzzles.",
+    "category": "dsa"
+  },
+  {
+    "title": "Python CPython: is vs ==",
+    "slug": "python-is-vs-equals",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "easy",
+    "description": "What is the difference between `is` and `==` in Python?",
+    "options": [
+      {
+        "key": "A",
+        "text": "is compares values; == compares identity.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "is checks if two references point to the SAME object in memory (identity); == checks if two objects have EQUAL value (calls __eq__).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "They are interchangeable for all types.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "is is only valid for primitive types; == works for all types.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  a = [1, 2, 3]\n  b = [1, 2, 3]\n  c = a\n\n  a == b   # True  — same values\n  a is b   # False — different objects in memory\n  a is c   # True  — same object (c is an alias for a)\n\nCPython caches small integers (-5 to 256) and interned strings, so is may return True for these:\n  x = 256; y = 256; x is y  # True (cached)\n  x = 257; y = 257; x is y  # False (not cached) — implementation detail!\n\nRule: Use == for value comparison; use is ONLY for singletons like None, True, False:\n  if result is None: ...  # correct\n  if result == None: ...  # works but style guide (PEP 8) recommends is",
+    "category": "language"
+  },
+  {
+    "title": "Python CPython: namedtuple vs dataclass",
+    "slug": "python-namedtuple-vs-dataclass",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "medium",
+    "description": "What is the key difference between `collections.namedtuple` and `@dataclass` (Python 3.7+)?",
+    "options": [
+      {
+        "key": "A",
+        "text": "namedtuple instances are mutable; dataclasses are always frozen/immutable.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "namedtuple creates immutable tuple subclasses with named fields; dataclass generates a regular mutable class with __init__, __repr__, __eq__ auto-generated, and supports default values, type hints, and optional freezing.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "dataclass is deprecated in Python 3.10 in favor of namedtuple.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "namedtuple supports inheritance; dataclass does not.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\n  from collections import namedtuple\n  Point = namedtuple('Point', ['x', 'y'])\n  p = Point(1, 2)\n  p.x = 3  # AttributeError — immutable!\n  p[0]     # 1 — still a tuple, index-accessible\n\n  from dataclasses import dataclass, field\n  @dataclass\n  class Point:\n    x: float\n    y: float = 0.0\n    tags: list = field(default_factory=list)\n  p = Point(1.0)\n  p.x = 3.0  # OK — mutable by default\n\n  @dataclass(frozen=True)  # makes it immutable + hashable, like namedtuple\n\nChoose namedtuple for lightweight read-only records with tuple semantics; choose dataclass for richer classes needing mutability, validation, or post-init logic.",
+    "category": "language"
+  },
+  {
+    "title": "Python: Walrus Operator and Assignment Expressions",
+    "slug": "python-walrus-operator",
+    "track": "Python",
+    "topic": "CPython Internals",
+    "difficulty": "easy",
+    "description": "What does the walrus operator `:=` do in Python 3.8+?",
+    "options": [
+      {
+        "key": "A",
+        "text": "It is an alternative syntax for dictionary key assignment.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "It assigns a value to a variable as part of an expression, allowing the value to be both assigned and used in the same statement.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "It is the walrus (deep copy) operator, equivalent to copy.deepcopy().",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "It is only valid inside lambda expressions.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nThe := operator (PEP 572) is called the \"assignment expression\" or walrus operator because it assigns AND returns a value:\n\n  # Without walrus — reads file twice conceptually:\n  while line := f.readline():\n    process(line)\n\n  # Filter and reuse computed value:\n  results = [y for x in data if (y := expensive(x)) > 0]\n\n  # Avoid redundant regex match call:\n  import re\n  if m := re.search(r'(\\d+)', text):\n    print(m.group(1))\n\nWithout :=, you'd need separate assignment statements or call the function twice. Walrus is especially useful in while loops, comprehension filters, and if statements where you want to capture and test a value in one step.",
+    "category": "language"
+  },
+  {
+    "title": "DBMS: ACID Properties",
+    "slug": "cs-dbms-acid-properties",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Transactions",
+    "difficulty": "easy",
+    "description": "What does the \"I\" in ACID stand for, and what does it guarantee?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Integrity — data must satisfy all schema constraints at all times.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Isolation — concurrent transactions execute as if they were serial; intermediate states are invisible to other transactions.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Immutability — committed data cannot be modified.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Indexing — all frequently queried columns must be indexed.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — Isolation\n\nACID breakdown:\n- Atomicity: all-or-nothing — a transaction fully commits or fully rolls back.\n- Consistency: transaction takes the DB from one valid state to another.\n- Isolation: concurrent transactions do not see each other's intermediate results.\n- Durability: committed data persists even after crashes (written to durable storage).\n\nIsolation levels (weakest to strongest): READ UNCOMMITTED → READ COMMITTED → REPEATABLE READ → SERIALIZABLE. Stronger isolation costs more performance (more locking/MVCC overhead). PostgreSQL defaults to READ COMMITTED; banks may use SERIALIZABLE.",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: B-Tree Index Internals",
+    "slug": "cs-dbms-btree-index",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Indexes",
+    "difficulty": "hard",
+    "description": "Why do databases use B+ Trees (not binary search trees) for indexes?",
+    "options": [
+      {
+        "key": "A",
+        "text": "B+ Trees require less memory because they do not store keys.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "B+ Trees have high fan-out (many keys per node), minimizing disk I/O by keeping tree height low; all values are in leaf nodes linked for efficient range scans.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "B+ Trees guarantee O(1) lookup while BSTs are O(log n).",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "B+ Trees auto-balance on every query, not just insertions.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nDisk I/O is ~1000x slower than RAM access. Tree height determines the number of disk reads for a lookup.\n\nBST: branching factor 2 → height O(log₂ n) → many disk reads for large n.\nB+ Tree: branching factor 100–1000 (each node fills a disk page ~4KB) → height O(log₁₀₀₀ n) ≈ 2–4 levels for billions of rows.\n\nB+ Tree properties:\n- Internal nodes: only keys (pointers to children) — maximize fan-out.\n- Leaf nodes: keys + values (actual data or row pointers), linked together as a doubly-linked list → efficient range scans (SELECT WHERE x BETWEEN 10 AND 100).\n- Always balanced: all leaves at same depth.",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: Isolation Level — Dirty Read",
+    "slug": "cs-dbms-dirty-read",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Transactions",
+    "difficulty": "medium",
+    "description": "Which isolation level allows dirty reads?",
+    "options": [
+      {
+        "key": "A",
+        "text": "READ COMMITTED",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "REPEATABLE READ",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "READ UNCOMMITTED",
+        "correct": true
+      },
+      {
+        "key": "D",
+        "text": "SERIALIZABLE",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: C — READ UNCOMMITTED\n\nA dirty read occurs when Transaction A reads data written by Transaction B, which has not yet committed. If B rolls back, A has read data that never officially existed.\n\nREAD UNCOMMITTED: allows dirty reads — lowest isolation, highest concurrency.\nREAD COMMITTED: prevents dirty reads — only reads committed data. (PostgreSQL default)\nREPEATABLE READ: additionally prevents non-repeatable reads — re-reading the same row always returns the same value within a transaction.\nSERIALIZABLE: additionally prevents phantom reads — no new rows matching a query's WHERE appear mid-transaction.\n\nEach stronger level adds more locking or MVCC overhead, reducing concurrent throughput.",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: Index — When NOT to Use",
+    "slug": "cs-dbms-index-when-not-to-use",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Indexes",
+    "difficulty": "medium",
+    "description": "When does adding a database index actually HURT performance?",
+    "options": [
+      {
+        "key": "A",
+        "text": "When the table has more than 1000 rows.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "When the column has very low cardinality (e.g., a boolean), or on tables with heavy write workloads, because each write must update all indexes.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "When the index is on a primary key column.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "When SELECT queries are more frequent than INSERT queries.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nIndexes speed up reads but slow down writes:\n- Every INSERT, UPDATE, DELETE must update all applicable indexes (maintain B+ Tree balance).\n- High-write tables (event logs, metrics) suffer from index maintenance overhead.\n\nLow cardinality problem: an index on a boolean column (true/false) causes a \"full table scan\" anyway — the optimizer may choose to skip the index because it would have to fetch half the table's pages.\n\nUseful index: columns with HIGH cardinality (email, user_id), frequently used in WHERE, JOIN, or ORDER BY. A composite index (a, b) helps queries filtering on a alone or (a AND b) but not b alone.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Process vs Thread",
+    "slug": "cs-os-process-vs-thread",
+    "track": "Core Fundamentals",
+    "topic": "OS Scheduling",
+    "difficulty": "easy",
+    "description": "What is the key difference between a process and a thread?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Threads have their own memory space; processes share memory.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A process has its own isolated address space; threads within a process share the same address space but have independent stacks and CPU register state.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Threads are heavier than processes and take more memory.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "A process can only have one thread.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nProcess: independent unit of execution with its own virtual address space (code, heap, stack, file descriptors). Inter-process communication (IPC) requires explicit mechanisms (pipes, sockets, shared memory). Crash isolation — one process crashing does not affect others.\n\nThread: lightweight unit within a process. Shares the process's code, heap, and global variables. Each thread has its own stack, program counter, and registers. Communication is easy (shared memory) but requires synchronization (mutexes, semaphores). Thread creation (~μs) is faster than process creation (~ms).\n\nContext switch: switching between threads within the same process is cheaper than switching between processes (no TLB flush needed for same address space).",
+    "category": "core"
+  },
+  {
+    "title": "OS: CPU Scheduling — Round Robin",
+    "slug": "cs-os-round-robin-scheduling",
+    "track": "Core Fundamentals",
+    "topic": "OS Scheduling",
+    "difficulty": "medium",
+    "description": "What happens in Round Robin scheduling if the time quantum is set too small?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Processes with higher priority get more CPU time.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Context switching overhead dominates; CPU spends more time switching than doing useful work.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Processes are never preempted and run to completion.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The scheduler falls back to FIFO automatically.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nRound Robin gives each process a fixed time quantum (e.g., 10–100ms) and cycles through them. If a process doesn't finish in its quantum, it is preempted and re-queued.\n\nToo small quantum (e.g., 1ms): extremely high context switch frequency. Saving/restoring CPU state (registers, stack pointer) + TLB/cache effects dominate. CPU utilization for actual work drops significantly.\n\nToo large quantum: degenerates towards FCFS (First Come First Served) — poor responsiveness.\n\nIdeal quantum: ~10–100ms for interactive systems (Linux CFS uses dynamic quantum based on weight). Linux uses the Completely Fair Scheduler (CFS), not pure Round Robin, but RR is the conceptual foundation.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Virtual Memory — Page Fault",
+    "slug": "cs-os-page-fault",
+    "track": "Core Fundamentals",
+    "topic": "OS Virtual Memory",
+    "difficulty": "medium",
+    "description": "What happens during a major page fault?",
+    "options": [
+      {
+        "key": "A",
+        "text": "The CPU accesses a page that is present in RAM but marked as read-only.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "The CPU tries to access a virtual page not mapped in the page table; the OS loads the required page from disk into RAM (swapping).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "The CPU generates an exception because the address is within a protected kernel page.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "The CPU accesses a page that is in RAM but recently evicted from the TLB cache.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nPage fault types:\n- Minor (soft) fault: page is in memory but not mapped in this process's page table (e.g., copy-on-write, mmap). Resolved without disk I/O.\n- Major (hard) fault: page is not in RAM — must be loaded from swap space or file on disk. Expensive (~5–10ms disk seek time).\n\nMajor page fault sequence:\n1. MMU raises page fault exception.\n2. OS page fault handler checks page table — finds page is valid but not in RAM.\n3. OS selects a victim page to evict (using LRU or Clock algorithm) if RAM is full.\n4. OS reads the required page from disk into a free frame.\n5. OS updates the page table and TLB.\n6. CPU retries the faulting instruction.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Semaphore vs Mutex",
+    "slug": "cs-os-semaphore-vs-mutex",
+    "track": "Core Fundamentals",
+    "topic": "OS Scheduling",
+    "difficulty": "medium",
+    "description": "What is the key difference between a semaphore and a mutex?",
+    "options": [
+      {
+        "key": "A",
+        "text": "A mutex can be unlocked by any thread; a semaphore can only be released by the thread that acquired it.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "A mutex (binary semaphore with ownership) enforces that only the locking thread can unlock it; a semaphore is a signaling mechanism with a counter, usable by any thread.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Semaphores are faster than mutexes because they use busy-waiting.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Mutexes allow multiple threads to access a resource simultaneously.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nMutex (Mutual Exclusion):\n- Binary: locked or unlocked.\n- Ownership: only the thread that locked it can unlock it.\n- Purpose: protect a critical section (shared resource) from concurrent access.\n\nSemaphore (counting):\n- Has a counter N; up to N threads can \"acquire\" simultaneously.\n- No ownership — any thread can signal (V / release) it.\n- Purpose: signaling between threads (producer signals consumer), or controlling access to a pool of N resources.\n\nBinary semaphore (N=1) ≈ mutex BUT lacks ownership semantics — a different thread can release it, enabling use for inter-thread signaling patterns where ownership transfer is desired.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Virtual Memory — TLB",
+    "slug": "cs-os-tlb",
+    "track": "Core Fundamentals",
+    "topic": "OS Virtual Memory",
+    "difficulty": "hard",
+    "description": "What is the TLB (Translation Lookaside Buffer) and what happens on a TLB miss?",
+    "options": [
+      {
+        "key": "A",
+        "text": "TLB is a type of RAM used for page table storage; a miss causes a disk read.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "TLB is a CPU-side cache of recent virtual-to-physical page translations; a miss causes a page table walk in RAM to find the mapping.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "TLB is software-managed only; hardware never walks the page table.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "A TLB miss always triggers a page fault.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nEvery memory access requires translating a virtual address to a physical address using the page table (which lives in RAM). Without a cache, every access would need multiple RAM reads (page table levels).\n\nTLB: a small, fully-associative cache (64–1024 entries) on the CPU storing recent (virtual page → physical frame) mappings.\n\nTLB hit: translation found in TLB → single-cycle latency. Covers ~99% of accesses if working set fits.\nTLB miss: CPU walks the multi-level page table in RAM (hardware page walker on x86, software handler on MIPS/RISC-V). ~10–100 cycles of penalty.\nPage fault: occurs when the page table entry is not present in RAM at all (page not mapped or swapped out). Much more expensive.\n\nContext switches cause TLB flushes (or use ASIDs to avoid flushing).",
+    "category": "core"
+  },
+  {
+    "title": "Networks: TCP Three-Way Handshake",
+    "slug": "cs-networks-tcp-handshake",
+    "track": "Core Fundamentals",
+    "topic": "Computer Networks TCP",
+    "difficulty": "easy",
+    "description": "What are the three steps of the TCP three-way handshake?",
+    "options": [
+      {
+        "key": "A",
+        "text": "SYN → ACK → FIN",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "SYN → SYN-ACK → ACK",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "SYN → ACK → SYN",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "CONNECT → ACCEPT → ESTABLISHED",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B — SYN → SYN-ACK → ACK\n\n1. Client → Server: SYN (seq=x) — \"I want to connect, my starting sequence number is x.\"\n2. Server → Client: SYN-ACK (seq=y, ack=x+1) — \"OK, I acknowledge x+1; my sequence number is y.\"\n3. Client → Server: ACK (ack=y+1) — \"I acknowledge y+1; connection established.\"\n\nAfter the handshake, both sides have synchronized sequence numbers and the connection is ESTABLISHED.\n\nTCP uses sequence numbers for:\n- Ordering out-of-order packets.\n- Detecting lost packets (retransmission).\n- Flow control (sliding window).\n\nTCP termination uses a four-way FIN handshake: FIN → ACK → FIN → ACK.",
+    "category": "core"
+  },
+  {
+    "title": "Networks: HTTP/1.1 vs HTTP/2",
+    "slug": "cs-networks-http2",
+    "track": "Core Fundamentals",
+    "topic": "Computer Networks TCP",
+    "difficulty": "medium",
+    "description": "What is the primary performance improvement of HTTP/2 over HTTP/1.1?",
+    "options": [
+      {
+        "key": "A",
+        "text": "HTTP/2 uses UDP instead of TCP for lower latency.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "HTTP/2 uses binary framing and multiplexing — multiple requests/responses share one TCP connection concurrently, eliminating head-of-line blocking.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "HTTP/2 compresses the request body using gzip automatically.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "HTTP/2 requires fewer DNS lookups per session.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nHTTP/1.1 limitations:\n- One request per TCP connection at a time (pipelining rarely used due to head-of-line blocking).\n- Browsers workaround by opening 6–8 parallel TCP connections per domain — wasteful.\n- Plain-text headers (repeated, verbose).\n\nHTTP/2 improvements:\n- Binary framing: messages split into binary frames (not text), multiplexed over one TCP connection.\n- Stream multiplexing: multiple requests/responses interleaved concurrently — no blocking.\n- Header compression (HPACK): reduces header overhead.\n- Server push: proactively send resources the client will need.\n\nHTTP/3 (QUIC): moves to UDP-based QUIC transport, eliminating TCP-level head-of-line blocking entirely.",
+    "category": "core"
+  },
+  {
+    "title": "Networks: DNS Resolution Process",
+    "slug": "cs-networks-dns-resolution",
+    "track": "Core Fundamentals",
+    "topic": "Computer Networks DNS",
+    "difficulty": "medium",
+    "description": "What is the correct order of DNS resolution for a first-time query to \"www.example.com\"?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Browser cache → Root server → TLD server → Authoritative server.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Root server → TLD server → Browser cache → Authoritative server.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Authoritative server → TLD server → Root server → Browser cache.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "ISP cache → Browser cache → TLD server → Root server.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A\n\nFull recursive DNS resolution:\n1. Browser DNS cache (TTL-controlled in-memory cache).\n2. OS DNS cache / /etc/hosts.\n3. Recursive resolver (ISP or 8.8.8.8) — checks its own cache.\n4. If cache miss: Recursive resolver queries Root Name Server → \"I don't know example.com, but here's the .com TLD server.\"\n5. TLD Name Server (.com) → \"Here's the authoritative NS for example.com.\"\n6. Authoritative Name Server → returns the A/AAAA record (IP address).\n7. Recursive resolver caches the result (per TTL) and returns it to the client.\n\nAll steps after step 3 are bypassed if the recursive resolver has a cached answer.",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: NoSQL vs SQL — CAP Theorem",
+    "slug": "cs-dbms-cap-theorem",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Transactions",
+    "difficulty": "hard",
+    "description": "The CAP theorem states a distributed system can guarantee at most two of three properties. Which three?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Consistency, Availability, Partition tolerance.",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Concurrency, Atomicity, Performance.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Consistency, Atomicity, Partition tolerance.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Consistency, Availability, Performance.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: A — Consistency, Availability, Partition tolerance\n\nCAP Theorem (Brewer, 2000): In a distributed system, network partitions (P) are unavoidable. You must choose between:\n- CP (Consistency + Partition tolerance): system returns an error/waits rather than serving stale data during a partition. Examples: HBase, Zookeeper, MongoDB (strong consistency mode).\n- AP (Availability + Partition tolerance): system continues serving (possibly stale) data during a partition. Examples: Cassandra, DynamoDB, CouchDB.\n\n\"CA\" (Consistency + Availability without Partition tolerance) is only achievable in a single-node system where network partitions cannot occur.\n\nModern systems often use tunable consistency (Cassandra's quorum reads/writes) to trade between C and A depending on the operation.",
+    "category": "core"
+  },
+  {
+    "title": "Networks: TCP vs UDP",
+    "slug": "cs-networks-tcp-vs-udp",
+    "track": "Core Fundamentals",
+    "topic": "Computer Networks TCP",
+    "difficulty": "easy",
+    "description": "Which use case is best suited for UDP over TCP?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Sending an email with a guaranteed delivery confirmation.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Live video streaming / online gaming where low latency is critical and occasional packet loss is acceptable.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Downloading a large file where every byte must arrive intact.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "HTTPS web traffic requiring ordered, reliable delivery.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nTCP: connection-oriented, reliable (ACKs, retransmission), ordered, flow/congestion controlled. Overhead: handshake latency, retransmission delays. Use for HTTP, email, FTP, SSH.\n\nUDP: connectionless, unreliable (no ACKs), unordered, no congestion control. Low overhead, low latency. Use for DNS (fast, small queries), VoIP, video conferencing, online games, live streaming.\n\nIn real-time applications, a retransmitted packet for 500ms-old video frame is useless — better to display the next frame. UDP lets the application decide how to handle loss.\n\nHTTP/3 (QUIC) uses UDP but implements reliability and ordering at the application layer, combining UDP's speed with TCP-like guarantees.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Deadlock vs Livelock vs Starvation",
+    "slug": "cs-os-deadlock-livelock-starvation",
+    "track": "Core Fundamentals",
+    "topic": "OS Scheduling",
+    "difficulty": "medium",
+    "description": "What distinguishes a livelock from a deadlock?",
+    "options": [
+      {
+        "key": "A",
+        "text": "In a livelock, processes are blocked and not executing; in a deadlock, they keep executing.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "In a livelock, processes are actively running and changing state, but make no overall progress (responding to each other indefinitely); in a deadlock, processes are blocked, waiting for events that will never occur.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Livelock only occurs in distributed systems; deadlock only in single-machine systems.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Deadlock is always detected automatically by the OS; livelock is not.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nDeadlock: processes are BLOCKED — each waiting for a resource held by another. No progress. No CPU consumption.\n\nLivelock: processes are RUNNING — actively responding to each other but not making useful progress. Like two people in a corridor repeatedly stepping aside in the same direction.\n\nExample (livelock): Thread A tries to acquire Lock1, sees Lock2 is busy, releases Lock1 and retries. Thread B does the same. Both keep releasing and retrying indefinitely.\n\nStarvation: a process is ready to run but is perpetually denied the CPU because higher-priority processes always preempt it. (Not blocked by locks — blocked by scheduler.)\n\nPrevention: randomized backoff (Ethernet CSMA/CD), global lock ordering (deadlock), aging (starvation).",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: Normalization — 3NF vs BCNF",
+    "slug": "cs-dbms-normalization-bcnf",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Transactions",
+    "difficulty": "hard",
+    "description": "A table is in 3NF but NOT in BCNF. What anomaly does BCNF eliminate?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Repeating groups of columns in a single row.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Partial dependencies — where non-key attributes depend on only part of a composite key.",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Functional dependencies where a non-key attribute determines part of the candidate key (non-trivial FD where the determinant is not a superkey).",
+        "correct": true
+      },
+      {
+        "key": "D",
+        "text": "Multi-valued dependencies between independent attributes.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: C\n\nNormal forms ladder:\n1NF: atomic values, no repeating groups.\n2NF: 1NF + no partial dependencies (non-key attribute depends on full composite key, not part of it).\n3NF: 2NF + no transitive dependencies (non-key attribute depends on another non-key attribute).\nBCNF: stricter than 3NF — for every functional dependency X → Y, X must be a superkey.\n\nThe gap between 3NF and BCNF: 3NF allows FDs where the determinant is not a superkey IF the dependent attribute is part of some candidate key. BCNF forbids this.\n\nTrade-off: BCNF decomposition sometimes causes loss of dependency preservation (a dependency cannot be checked with a single table scan). 3NF is often preferred for this reason in practice.",
+    "category": "core"
+  },
+  {
+    "title": "Networks: HTTPS and TLS Handshake",
+    "slug": "cs-networks-tls-handshake",
+    "track": "Core Fundamentals",
+    "topic": "Computer Networks TCP",
+    "difficulty": "hard",
+    "description": "In a TLS 1.3 handshake, what is the purpose of the Diffie-Hellman key exchange?",
+    "options": [
+      {
+        "key": "A",
+        "text": "To encrypt the server's private key for transmission to the client.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "To establish a shared session key between client and server over an insecure channel without ever transmitting the key itself.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "To verify the server's identity using a trusted certificate authority.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "To compress HTTP headers for faster data transfer.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nDiffie-Hellman (DH) key exchange (conceptually):\n1. Client and server agree on public parameters (prime p, generator g).\n2. Client picks secret a, sends g^a mod p.\n3. Server picks secret b, sends g^b mod p.\n4. Client computes (g^b)^a = g^(ab) mod p.\n5. Server computes (g^a)^b = g^(ab) mod p.\nBoth arrive at the same shared secret without it ever being transmitted.\n\nTLS 1.3 uses ECDHE (Elliptic Curve DH Ephemeral) for Perfect Forward Secrecy (PFS): a new key pair is generated for each session. Even if a server's long-term private key is compromised later, past sessions cannot be decrypted.\n\nCertificate (X.509): provides server authentication (binds the server's public key to its domain via a CA-signed cert). DH provides key exchange; the cert provides authentication.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Memory Paging vs Segmentation",
+    "slug": "cs-os-paging-vs-segmentation",
+    "track": "Core Fundamentals",
+    "topic": "OS Virtual Memory",
+    "difficulty": "medium",
+    "description": "What is the key advantage of paging over segmentation in memory management?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Paging preserves the logical structure of programs (code, data, stack).",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Paging eliminates external fragmentation by using fixed-size pages; memory frames can be allocated anywhere in physical memory.",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "Paging allows segments to grow dynamically without reallocation.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Paging is simpler to implement than segmentation.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nSegmentation: divides memory into logical variable-size segments (code, data, stack, heap). Problems: external fragmentation — gaps between segments are unusable if too small for a new segment.\n\nPaging: divides both physical memory and virtual address space into fixed-size pages (typically 4KB). Physical frames and virtual pages are the same size, so any frame can hold any page. No external fragmentation. Internal fragmentation: the last page of a process may be partially used.\n\nModern OSes use segmentation + paging (x86 protected mode): segments provide logical organization, paging handles physical memory allocation.\n\nHuge pages (2MB/1GB): reduce TLB pressure for large working sets (databases, ML workloads).",
+    "category": "core"
+  },
+  {
+    "title": "DBMS: SQL Query Execution Order",
+    "slug": "cs-dbms-sql-execution-order",
+    "track": "Core Fundamentals",
+    "topic": "DBMS Indexes",
+    "difficulty": "medium",
+    "description": "In SQL, what is the logical order of clause evaluation?",
+    "options": [
+      {
+        "key": "A",
+        "text": "SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "FROM → SELECT → WHERE → GROUP BY → ORDER BY → HAVING",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "SELECT → WHERE → FROM → HAVING → GROUP BY → ORDER BY",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nLogical SQL evaluation order (not the order you write it):\n1. FROM / JOIN — identify and combine the source tables.\n2. WHERE — filter individual rows.\n3. GROUP BY — group rows by specified columns.\n4. HAVING — filter groups (can use aggregate functions).\n5. SELECT — compute the output columns and expressions.\n6. DISTINCT — remove duplicates.\n7. ORDER BY — sort results.\n8. LIMIT / OFFSET — paginate.\n\nImplication: you cannot use a SELECT alias in a WHERE clause (WHERE runs before SELECT). But you CAN use aliases in ORDER BY (ORDER BY runs after SELECT).\n\nThis is why: SELECT name, COUNT(*) AS cnt FROM ... WHERE cnt > 5 — FAILS. Use HAVING instead: HAVING COUNT(*) > 5.",
+    "category": "core"
+  },
+  {
+    "title": "OS: Context Switch — Cost and Mechanisms",
+    "slug": "cs-os-context-switch-cost",
+    "track": "Core Fundamentals",
+    "topic": "OS Scheduling",
+    "difficulty": "medium",
+    "description": "What are the main costs of a CPU context switch between two processes?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Only the time to save and restore CPU registers (~nanoseconds), making it essentially free.",
+        "correct": false
+      },
+      {
+        "key": "B",
+        "text": "Saving/restoring CPU state (registers, PC, stack pointer), plus indirect costs: TLB flush (invalidating virtual-to-physical mappings) and cache pollution (new process evicts old process cache lines).",
+        "correct": true
+      },
+      {
+        "key": "C",
+        "text": "The cost is always exactly one clock cycle regardless of process state.",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Context switches only occur between processes, never between threads of the same process.",
+        "correct": false
+      }
+    ],
+    "explanation": "Answer: B\n\nContext switch components:\n\n1. Direct costs (kernel work):\n   - Save current process: registers, PC, stack pointer, FPU state → PCB (Process Control Block).\n   - Restore next process: load saved state from its PCB.\n   - Typically 1–10 microseconds of pure kernel time.\n\n2. Indirect costs (the expensive part):\n   - TLB flush: switching address spaces invalidates all TLB entries (or requires ASID tagging to avoid). Next process gets TLB misses on every memory access until its working set is re-cached.\n   - Cache pollution: L1/L2 caches contain old process's data. New process incurs cache misses until its hot data is loaded.\n   - These indirect costs can be 10–100x the direct cost for cache-heavy workloads.\n\nThread context switches (same process) are cheaper: no TLB flush (same address space), though caches are still disrupted.",
+    "category": "core"
+  },
+  {
+    "title": "Java DSA: LRU Cache Implementation",
+    "slug": "java-dsa-lru-cache",
+    "track": "Java",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "hard",
+    "description": "Which Java standard library collection can be configured to act as an LRU Cache by overriding removeEldestEntry()?",
+    "options": [
+      {
+        "key": "A",
+        "text": "LinkedHashMap",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "TreeMap",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "ConcurrentHashMap",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "ArrayDeque",
+        "correct": false
+      }
+    ],
+    "explanation": "LinkedHashMap maintains a doubly-linked list running through its entries. With access-order enabled and removeEldestEntry() overridden, it functions directly as an LRU cache."
+  },
+  {
+    "title": "Java DSA: Detecting Cycle in Linked List",
+    "slug": "java-dsa-cycle-detection",
+    "track": "Java",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "What algorithm detects a cycle in a singly linked list in O(N) time and O(1) space?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Floyd's Tortoise and Hare (Two Pointer)",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Binary Search",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Kruskal Algorithm",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Dijkstra's Algorithm",
+        "correct": false
+      }
+    ],
+    "explanation": "Floyd's Cycle-Finding algorithm uses two pointers moving at different speeds (1 step and 2 steps). If a cycle exists, they will inevitably meet."
+  },
+  {
+    "title": "JavaScript DSA: Valid Parentheses Using Stack",
+    "slug": "js-dsa-valid-parentheses",
+    "track": "JavaScript",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "What is the most optimal data structure and time complexity to validate balanced brackets like \"({[]})\"?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Stack with O(N) time and O(N) space",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Queue with O(N log N) time and O(1) space",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Binary Tree with O(N) time and O(N) space",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Hash Set with O(1) space",
+        "correct": false
+      }
+    ],
+    "explanation": "A stack pushes open brackets and pops when matching close brackets are found. This operates in linear O(N) time and space."
+  },
+  {
+    "title": "JavaScript DSA: Two Sum with Map",
+    "slug": "js-dsa-two-sum-map",
+    "track": "JavaScript",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "Using a JavaScript Map/Object, what is the optimal time complexity to find two indices whose elements sum to target in an unsorted array?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(N) time and O(N) space",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "O(N^2) time and O(1) space",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "O(log N) time and O(N) space",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(N log N) time and O(1) space",
+        "correct": false
+      }
+    ],
+    "explanation": "Storing complements (target - num) in a Map allows instant O(1) lookup during a single O(N) pass."
+  },
+  {
+    "title": "JavaScript DSA: Merge K Sorted Lists Complexity",
+    "slug": "js-dsa-merge-k-sorted-lists",
+    "track": "JavaScript",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "hard",
+    "description": "What is the optimal time complexity to merge K sorted linked lists containing a total of N elements using a Min-Heap / Priority Queue?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(N log K)",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "O(N * K)",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "O(K log N)",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(N^2)",
+        "correct": false
+      }
+    ],
+    "explanation": "Maintaining a min-heap of size K requires O(log K) for each insertion and deletion. For N total elements, this results in O(N log K) time."
+  },
+  {
+    "title": "Python DSA: Binary Search in Sorted Rotated Array",
+    "slug": "python-dsa-rotated-sorted-array",
+    "track": "Python",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "What is the time complexity to search an element in a sorted array that has been rotated at an unknown pivot, assuming distinct elements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(log N) using modified binary search",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "O(N) linear search only",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "O(1) hashing",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(N log N)",
+        "correct": false
+      }
+    ],
+    "explanation": "At any pivot point, at least one half (left or right) of the array remains strictly sorted. Binary search checks which half is sorted and determines if the target falls within that sorted half in O(log N)."
+  },
+  {
+    "title": "Python DSA: Topological Sort Algorithm",
+    "slug": "python-dsa-topological-sort",
+    "track": "Python",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "Which algorithm performs topological sorting on a Directed Acyclic Graph (DAG) using in-degrees and a queue?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Kahn's Algorithm (BFS)",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "Prim's Algorithm",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "Bellman-Ford Algorithm",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "Floyd-Warshall Algorithm",
+        "correct": false
+      }
+    ],
+    "explanation": "Kahn's algorithm initializes a queue with all vertices having in-degree 0. As vertices are dequeued and added to the topological order, the in-degrees of their neighbors are decremented."
+  },
+  {
+    "title": "C++ DSA: Dijkstra Shortest Path Complexity",
+    "slug": "cpp-dsa-dijkstra-complexity",
+    "track": "C++",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "medium",
+    "description": "What is the time complexity of Dijkstra’s Algorithm using a std::priority_queue (min-heap) with V vertices and E edges?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O((V + E) log V)",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "O(V^2)",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "O(E * V)",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(V log E)",
+        "correct": false
+      }
+    ],
+    "explanation": "Each vertex is extracted from the priority queue once (V log V), and each edge relaxation may push a distance update into the heap (E log V), giving O((V + E) log V)."
+  },
+  {
+    "title": "C++ DSA: Trie Prefix Search Time Complexity",
+    "slug": "cpp-dsa-trie-prefix-search",
+    "track": "C++",
+    "category": "dsa",
+    "topic": "DSA",
+    "difficulty": "easy",
+    "description": "What is the time complexity to search for a word of length L in a Trie containing N stored words?",
+    "options": [
+      {
+        "key": "A",
+        "text": "O(L) independent of N",
+        "correct": true
+      },
+      {
+        "key": "B",
+        "text": "O(N * L)",
+        "correct": false
+      },
+      {
+        "key": "C",
+        "text": "O(log N)",
+        "correct": false
+      },
+      {
+        "key": "D",
+        "text": "O(L log N)",
+        "correct": false
+      }
+    ],
+    "explanation": "A Trie traverses one edge per character of the word, taking O(L) time regardless of the total number of words N stored in the Trie."
+  }
+]
