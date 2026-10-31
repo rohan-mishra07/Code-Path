@@ -34,49 +34,62 @@ export async function seedQuestions(filePath) {
       else if (track.includes('JavaScript')) track = 'JavaScript';
       else if (track.includes('C++')) track = 'C++';
       else if (track.includes('Python')) track = 'Python';
-      else if (track.includes('Core')) track = 'Core Fundamentals';
+      else if (track.includes('Core')) track = 'Core CS Fundamentals';
 
-      // Determine category according to spec:
-      // "read category from the JSON. For my existing questions.json (no category field),
-      // default to 'language' for the four language tracks and 'core' for Core CS Fundamentals."
+      // category = q.category if present, otherwise 'core' when track is 'Core CS Fundamentals' and 'language' for every other track
       let category = q.category;
       if (!category) {
-        const normTrack = track.toLowerCase();
-        if (normTrack.includes('core')) {
+        if (track === 'Core CS Fundamentals' || q.track === 'Core CS Fundamentals' || track.toLowerCase().includes('core')) {
           category = 'core';
         } else {
-          // Default to 'language' for the four language tracks
           category = 'language';
         }
       }
 
+      // INSERT INTO problems must include: title, slug, description, difficulty, problem_type, topic, track, category, explanation
       const res = await client.query(
         `INSERT INTO problems
            (title, slug, description, difficulty, problem_type, topic, track, category, explanation)
-         VALUES ($1, $2, $3, $4, 'mcq', $5, $6, $7, $8)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          ON CONFLICT (slug) DO UPDATE SET
-           title       = EXCLUDED.title,
-           description = EXCLUDED.description,
-           difficulty  = EXCLUDED.difficulty,
-           topic       = EXCLUDED.topic,
-           track       = EXCLUDED.track,
-           category    = EXCLUDED.category,
-           explanation = EXCLUDED.explanation
+           title        = EXCLUDED.title,
+           description  = EXCLUDED.description,
+           difficulty   = EXCLUDED.difficulty,
+           problem_type = EXCLUDED.problem_type,
+           topic        = EXCLUDED.topic,
+           track        = EXCLUDED.track,
+           category     = EXCLUDED.category,
+           explanation  = EXCLUDED.explanation
          RETURNING id, (xmax = 0) AS is_insert;`,
-        [q.title, q.slug, q.description, q.difficulty, q.topic || track, track, category, q.explanation]
+        [
+          q.title,
+          q.slug,
+          q.description,
+          q.difficulty,
+          q.problem_type || 'mcq',
+          q.topic || track,
+          track,
+          category,
+          q.explanation
+        ]
       );
 
       const { id: problemId, is_insert } = res.rows[0];
       if (is_insert) inserted++;
       else updated++;
 
-      // Upsert options
+      // Upsert options: INSERT INTO mcq_options must use: problem_id, option_key, option_text, is_correct
       await client.query('DELETE FROM mcq_options WHERE problem_id = $1', [problemId]);
       for (const opt of q.options) {
         await client.query(
           `INSERT INTO mcq_options (problem_id, option_key, option_text, is_correct)
            VALUES ($1, $2, $3, $4)`,
-          [problemId, opt.key || opt.option_key, opt.text || opt.option_text, Boolean(opt.correct || opt.is_correct)]
+          [
+            problemId,
+            opt.option_key || opt.key,
+            opt.option_text || opt.text,
+            Boolean(opt.is_correct ?? opt.correct)
+          ]
         );
       }
     }
@@ -94,3 +107,4 @@ if (process.argv[1]?.includes('seed.js')) {
   });
 }
 
+export default pool;
