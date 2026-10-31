@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "code-path-ki7u.onrender.com"
+      "destination": "https://code-path-ki7u.onrender.com/api/:path*"
     },
     {
       "source": "/((?!api/).*)",
